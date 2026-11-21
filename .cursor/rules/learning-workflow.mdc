@@ -1,0 +1,30 @@
+---
+description: Learning-session state machine and mastery evidence. Use when editing workflows, diagnostics, planning, teaching, evaluation, retention, or learner knowledge.
+globs: services/api/app/workflows/**/*,services/api/app/learner/**/*,services/api/app/diagnostics/**/*,services/api/app/planner/**/*,services/api/app/teaching/**/*,services/api/app/evaluation/**/*,services/api/app/retention/**/*
+alwaysApply: false
+---
+
+# Learning workflow
+
+Persist every transition. Reject invalid ones. A refresh or process restart must resume the same session.
+
+```text
+TOPIC_SELECTED → DIAGNOSING → PLAN_READY → TEACHING → PRACTICE → EVALUATING
+EVALUATING → REMEDIATION | MASTERED | NEEDS_REVIEW
+REMEDIATION → TEACHING
+NEEDS_REVIEW → RETENTION_DUE → RETENTION_ASSESSMENT → MASTERY_UPDATED
+```
+
+Use `NEEDS_REVIEW` when evidence is ambiguous or too thin for a mastery decision.
+
+- Tie every assessment to a learning objective.
+- Attach evidence to every mastery update. A correct answer with weak reasoning does not award mastery.
+- Partial understanding gets partial credit and a concrete next step. Do not emit empty praise such as "Good job".
+- Keep observed knowledge separate from inferred knowledge. Inferences stay uncertain until the learner demonstrates them.
+- A missing prerequisite changes the starting point. Do not skip a concept without evidence.
+- Repeated failure changes strategy. Do not repeat the same explanation.
+- Hints must not reveal the full answer on the first hint. Support fades as performance improves.
+- Retention dates are computed in code, including missed reviews and timezone boundaries.
+- Authorize every learner-owned record. One learner cannot read another's profile, session, or mastery data.
+
+Fixed benchmark topic when a phase needs an end-to-end scenario: backpropagation, with chain-rule weakness and a loss-versus-gradient confusion. See the `learning-workflow` skill.

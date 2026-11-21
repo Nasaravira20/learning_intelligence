@@ -1,0 +1,36 @@
+---
+description: AI Teacher MVP working agreement. One approved phase at a time. Evidence of learning, not generated answers.
+alwaysApply: true
+---
+
+# AI Teacher MVP
+
+Implementation authority: `AI_TEACHER_MVP_ROADMAP.md`. Product context: `Personal_Intelligence_Teacher_Mode_Build_Plan.md`. When they disagree on sequence or scope, follow the roadmap.
+
+North star: verified learning progress per learner over time. A fluent explanation is not a completed learning experience. Mastery needs assessment evidence.
+
+## Scope
+
+Build Teacher Mode only. Do not build voice, always-on audio, unrestricted scraping, full PDF or video ingestion, simulated classrooms, learner personas, institutional analytics, marketplaces, or multi-agent infrastructure.
+
+Core loop: `UNDERSTAND → DIAGNOSE → PLAN → TEACH → EVALUATE → ADAPT → RETAIN`
+
+## How to work
+
+- Implement only the phase the product owner has explicitly approved.
+- Inspect the repository before assuming it is empty. Adapt the suggested tree; do not create empty directories just to match it.
+- Before coding a phase, state the existing architecture, the proposed design, files to create or change, dependencies, database changes, and acceptance tests. Wait for review before writing implementation code.
+- Stop at the end of the phase. Fill in the phase completion report from the `implement-roadmap-phase` skill. Do not start the next phase without explicit approval.
+- Nothing is approved yet. The first task is a Phase 0 proposal only. Phase 0 has no Gemini calls, agents, or pedagogy.
+- Do not claim a phase is done because code exists. Run the tests and report the exact commands and results.
+- Do not silently skip an acceptance criterion. Mark it passed, failed, or not implemented.
+
+## Hard constraints
+
+- Gemini stays on the backend, behind one provider client. Never hard-code model IDs. A listed model is not usable until a real generation request with the configured key succeeds.
+- Secrets stay in environment variables. Never commit `.env`, log `GEMINI_API_KEY`, or return it from an API.
+- The Gemini budget is USD $20 total for the project. Routine tests use the mock provider.
+- Validate model output with typed schemas before it changes state. Treat model output as untrusted input.
+- Deterministic code owns database writes, state transitions, revision scheduling, authorization, input validation, and budget enforcement.
+- The model must not invent strategy IDs, citations, DOIs, quotations, or effect sizes.
+- Do not store full copyrighted papers or books. Store bibliographic metadata and concise original summaries. Human review is required before a summary affects production strategy selection.

@@ -1,0 +1,28 @@
+---
+description: Gemini provider, model verification, and the USD $20 budget guard. Use when editing AI providers, model routing, usage tracking, prompts, or Gemini scripts.
+globs: services/api/app/ai/**/*,scripts/**/*.py
+alwaysApply: false
+---
+
+# Gemini and budget
+
+- One backend client. No model calls from routes, agents, or the frontend.
+- Read `GEMINI_API_KEY` from backend environment only.
+- Do not invent model IDs. Candidate IDs in the roadmap are hypotheses. Record what the live key can actually run in `docs/GEMINI_MODEL_STRATEGY.md`.
+- Verify with `scripts/check_gemini_models.py` before assigning a model to diagnostics, teaching, or evaluation.
+- Classify failures separately: invalid key, permission denied, model not found, unsupported operation, quota, rate limit, timeout, network, unknown.
+- Do not retry invalid-key or quota errors. Cap retries. Back off only for transient failures.
+- Log task, model ID, token counts when available, latency, status, and estimated cost. Never log the key, authorization headers, or learner secrets.
+- Internal costs are estimates. Do not claim to know the provider's remaining credit.
+- Hard-stop at the configured internal ceiling and return a clear user-facing error.
+- Tests use the mock provider unless the task is an explicit live smoke test.
+
+```env
+GEMINI_API_KEY=replace_me
+GEMINI_MODEL_FAST=verified_model_id
+GEMINI_MODEL_TEACHING=verified_model_id
+GEMINI_MODEL_EVALUATION=verified_model_id
+GEMINI_MODEL_DIAGNOSTIC=verified_model_id
+```
+
+Commit `.env.example` only. Choose the cheapest model that passes the task benchmark. One verified model may serve several tasks at first.

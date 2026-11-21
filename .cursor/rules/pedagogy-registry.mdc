@@ -1,0 +1,22 @@
+---
+description: Pedagogy registry, research sources, and strategy selection. Use when editing research files, strategy definitions, or the pedagogy selector.
+globs: research/**/*,services/api/app/pedagogy/**/*
+alwaysApply: false
+---
+
+# Pedagogy registry
+
+P0 only, until the core loop works: retrieval practice, spaced practice, worked examples, guided practice, scaffolding and gradual release, small-step instruction, checks for understanding, formative feedback, self-explanation, concrete examples and non-examples, elaborative interrogation, mastery learning.
+
+Do not implement yet: interleaving, dual coding, concept mapping, teach-back, analogical comparison, varied practice, transfer practice, multimedia segmenting.
+
+- Versioned YAML or JSON under `research/sources/` and `research/strategies/`. No strategy-management UI in the first version.
+- Every strategy has a stable ID, version, implementation steps, suitable contexts, learner conditions, avoid-or-modify conditions, limitations, and source IDs that resolve.
+- Every source has bibliographic metadata, access type, license, and `review_status`. Verify DOI and URL before production use.
+- Unreviewed strategies cannot be selected in production. Registry validation fails closed on missing IDs, duplicate IDs, dangling sources, or missing limitations.
+- The selector is deterministic. It may use a model only to fill a typed rationale inside those policies.
+- Check eligibility and contraindications. Record primary strategy, supporting strategies, sequence, fallback, rationale, registry version, and policy version.
+- The same inputs and policy version must reproduce the same selection. Persist the decision.
+- Retrieval practice is not initial instruction. Scaffolding must fade. One correct recall item is not mastery.
+
+Follow the schemas in the `pedagogy-registry` skill.

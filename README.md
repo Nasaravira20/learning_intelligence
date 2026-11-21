@@ -1,0 +1,99 @@
+# AI Teacher
+
+Phase 0 is a local learning-session shell. The browser talks to Next.js, Next.js proxies to FastAPI, and FastAPI stores learners, topics, and sessions in PostgreSQL.
+
+A session is created in `TOPIC_SELECTED` and stays there. Resume reloads that saved session and records when it was resumed. Gemini, pedagogy, and the learning state machine begin in later phases.
+
+Open http://localhost:3000 for the landing page. Create an account, then continue in Teacher Mode. Sign-in uses an HttpOnly cookie. Passwords are stored as bcrypt hashes and are not written to logs. A signed-in learner only sees their own sessions.
+
+## Run the stack
+
+From the repository root:
+
+```powershell
+docker compose up --build
+```
+
+Open http://localhost:3000.
+
+The local database credentials are `ai_teacher` / `ai_teacher` on port 5432. They are for this development stack. API logs are JSON on the `api` container stdout. Web proxy logs are JSON on the `web` container stdout.
+
+```powershell
+docker compose logs -f api
+docker compose logs -f web
+```
+
+A log line looks like:
+
+```json
+{"timestamp":"...","level":"INFO","logger":"app.core.middleware","message":"request_completed","request_id":"...","fields":{"method":"POST","path":"/api/learners","status_code":201,"duration_ms":8.2}}
+```
+
+Connection strings, bearer tokens, and API keys are redacted before a line is written. Learner display names are stored in the database and are not written to info logs.
+
+## Errors
+
+Failed responses use one envelope:
+
+```json
+{"error":{"code":"learner_not_found","message":"Learner was not found.","request_id":"..."}}
+```
+
+The same request ID is returned in the `X-Request-ID` header. Validation errors add a `details` array of `field` and `message`. `/health` returns `{"status":"ok","database":"ok"}` only when PostgreSQL answers. If the database is down, it returns `503` with code `database_unavailable`.
+
+## Tests
+
+API tests run inside the API image so they use the same Python as the service. They create a separate `ai_teacher_test` database, drop its schema, and apply migrations from empty.
+
+```powershell
+docker compose run --rm api python -m pytest
+```
+
+Web tests:
+
+```powershell
+cd apps/web
+npm install
+npm test
+```
+
+## Run the processes without rebuilding images
+
+Start only the database:
+
+```powershell
+docker compose up -d db
+```
+
+API, from `services/api`:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python -m pip install -e ".[dev]"
+$env:DATABASE_URL = "postgresql+psycopg://ai_teacher:ai_teacher@localhost:5432/ai_teacher"
+$env:LOG_LEVEL = "INFO"
+$env:WEB_ORIGIN = "http://localhost:3000"
+.\.venv\Scripts\python -m app.entrypoint
+```
+
+Web, from `apps/web`:
+
+```powershell
+npm install
+npm run dev
+```
+
+The web app proxies to `http://127.0.0.1:8000` unless `API_PROXY_TARGET` is set.
+
+Copy `.env.example` when you want those values in a file. Do not commit `.env`.
+
+## Phase 0 acceptance
+
+- Frontend and backend start with Docker Compose.
+- The web app reaches `/health` through its proxy.
+- Alembic upgrades a clean database, and the migration can downgrade and upgrade again.
+- `/health` reports database failure instead of a standing ok.
+- A learner, topic, and session can be created and fetched.
+- Resume keeps the same session id and `TOPIC_SELECTED` status after the write is committed.
+- Pytest and Vitest pass.
+- `.env` is listed in `.gitignore`.

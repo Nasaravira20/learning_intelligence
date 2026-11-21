@@ -1,0 +1,68 @@
+name: ai-teacher
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ai_teacher
+      POSTGRES_PASSWORD: ai_teacher
+      POSTGRES_DB: ai_teacher
+    ports:
+      - "5432:5432"
+    volumes:
+      - ai_teacher_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ai_teacher -d ai_teacher"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  api:
+    build:
+      context: ./services/api
+    environment:
+      DATABASE_URL: postgresql+psycopg://ai_teacher:ai_teacher@db:5432/ai_teacher
+      LOG_LEVEL: INFO
+      WEB_ORIGIN: http://localhost:3000
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  web:
+    build:
+      context: ./apps/web
+    environment:
+      API_PROXY_TARGET: http://api:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - http://127.0.0.1:3000/health | grep -q '\"status\":\"ok\"'",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+volumes:
+  ai_teacher_pg:

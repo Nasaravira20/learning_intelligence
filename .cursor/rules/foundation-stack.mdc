@@ -1,0 +1,19 @@
+---
+description: Phase 0 application foundation. Use when creating the web shell, FastAPI app, Docker Compose, migrations, health checks, or session APIs.
+globs: apps/web/**/*,services/api/**/*,docker-compose.yml,.env.example
+alwaysApply: false
+---
+
+# Foundation stack
+
+Change the stack only with a written reason in `docs/decisions/`.
+
+- Frontend: Next.js + TypeScript. Tailwind when UI work starts. Vitest or Playwright for frontend tests.
+- Backend: Python, FastAPI, Pydantic, SQLAlchemy, Alembic, Pytest.
+- Database: PostgreSQL. Add pgvector only when retrieval is actually required.
+- Local runtime: Docker Compose. No microservices, Redis, or workers until a measured need exists.
+- Workflow: an explicit state machine. Add LangGraph only if that machine becomes insufficient.
+- Phase 0 delivers health, structured logs, learner and learning-session create/get/resume, migrations from a clean database, `.env.example`, and a README that matches the commands that actually work.
+- Phase 0 does not call Gemini and does not add teaching agents.
+
+Minimum entities, added in the phase that needs them: `users`, `learner_profiles`, `learning_topics`, `learning_sessions`, `messages`, `diagnostic_attempts`, `learner_knowledge`, `lesson_plans`, `assessments`, `assessment_attempts`, `mastery_records`, `revision_schedule`, `ai_usage_records`.
