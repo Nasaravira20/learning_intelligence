@@ -80,7 +80,8 @@ def client(migrated_database: str):
         connection.execute(
             text(
                 "TRUNCATE auth_sessions, learning_sessions, learning_topics, learner_profiles, users, "
-                "ai_usage_records, ai_model_checks "
+                "ai_usage_records, ai_model_checks, learning_goals, learning_preferences, "
+                "learner_knowledge, misconception_records, assessment_records, learning_activities "
                 "RESTART IDENTITY CASCADE"
             )
         )

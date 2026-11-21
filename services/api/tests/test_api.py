@@ -46,6 +46,12 @@ def test_migrations_create_expected_tables(client) -> None:
         "learning_sessions",
         "ai_usage_records",
         "ai_model_checks",
+        "learning_goals",
+        "learning_preferences",
+        "learner_knowledge",
+        "misconception_records",
+        "assessment_records",
+        "learning_activities",
     } <= names
 
 

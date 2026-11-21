@@ -210,3 +210,188 @@ export function listSessions(): Promise<LearningSession[]> {
 export function resumeSession(sessionId: string): Promise<LearningSession> {
   return apiRequest<LearningSession>(`/api/sessions/${sessionId}/resume`, { method: "POST" });
 }
+
+export type EvidenceKind = "observed" | "inferred";
+
+export type LearnerProfileDetail = {
+  id: string;
+  display_name: string;
+  background_note: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type LearningPreference = {
+  pace: "unhurried" | "steady" | "intensive";
+  explanation_detail: "concise" | "balanced" | "thorough";
+  practice_first: boolean;
+  notes: string | null;
+  updated_at: string;
+};
+
+export type LearningGoal = {
+  id: string;
+  topic_id: string | null;
+  statement: string;
+  status: "active" | "completed" | "archived";
+  created_at: string;
+  updated_at: string;
+};
+
+export type KnowledgeRecord = {
+  id: string;
+  topic_id: string;
+  concept: string;
+  summary: string;
+  evidence_kind: EvidenceKind;
+  provenance: string;
+  confidence: number;
+  confirmed: boolean;
+  correction_note: string | null;
+  corrected_at: string | null;
+  replaces_id: string | null;
+  created_at: string;
+};
+
+export type MisconceptionRecord = {
+  id: string;
+  topic_id: string;
+  concept: string;
+  description: string;
+  evidence_kind: EvidenceKind;
+  provenance: string;
+  confidence: number;
+  confirmed: boolean;
+  supporting_note: string | null;
+  status: "open" | "resolved" | "rejected";
+  correction_note: string | null;
+  corrected_at: string | null;
+  replaces_id: string | null;
+  created_at: string;
+};
+
+export type AssessmentRecord = {
+  id: string;
+  topic_id: string;
+  session_id: string | null;
+  prompt_summary: string;
+  response_summary: string;
+  outcome: "recorded" | "correct" | "partial" | "incorrect" | "unanswered";
+  created_at: string;
+};
+
+export type LearningActivityRecord = {
+  id: string;
+  topic_id: string | null;
+  session_id: string | null;
+  activity_kind: "explanation" | "practice" | "review" | "note";
+  summary: string;
+  occurred_at: string;
+  created_at: string;
+};
+
+export type LearnerDashboardData = {
+  profile: LearnerProfileDetail;
+  preferences: LearningPreference | null;
+  goals: LearningGoal[];
+  knowledge: KnowledgeRecord[];
+  misconceptions: MisconceptionRecord[];
+  assessments: AssessmentRecord[];
+  activities: LearningActivityRecord[];
+};
+
+export type SessionHistory = {
+  session_id: string;
+  learner_id: string;
+  topic_id: string;
+  topic_title: string;
+  profile: LearnerProfileDetail;
+  preferences: LearningPreference | null;
+  goals: LearningGoal[];
+  knowledge: KnowledgeRecord[];
+  misconceptions: MisconceptionRecord[];
+  assessments: AssessmentRecord[];
+  activities: LearningActivityRecord[];
+};
+
+export function getLearnerDashboard(): Promise<LearnerDashboardData> {
+  return apiRequest<LearnerDashboardData>("/api/learner");
+}
+
+export function updateLearnerProfile(displayName: string, backgroundNote: string): Promise<LearnerProfileDetail> {
+  return apiRequest<LearnerProfileDetail>("/api/learner/profile", {
+    method: "PATCH",
+    body: JSON.stringify({
+      display_name: displayName,
+      background_note: backgroundNote.trim() ? backgroundNote.trim() : "",
+    }),
+  });
+}
+
+export function saveLearnerPreferences(
+  pace: LearningPreference["pace"],
+  explanationDetail: LearningPreference["explanation_detail"],
+  practiceFirst: boolean,
+  notes: string,
+): Promise<LearningPreference> {
+  return apiRequest<LearningPreference>("/api/learner/preferences", {
+    method: "PUT",
+    body: JSON.stringify({
+      pace,
+      explanation_detail: explanationDetail,
+      practice_first: practiceFirst,
+      notes: notes.trim() ? notes.trim() : null,
+    }),
+  });
+}
+
+export function createLearningGoal(statement: string, topicId: string): Promise<LearningGoal> {
+  return apiRequest<LearningGoal>("/api/learner/goals", {
+    method: "POST",
+    body: JSON.stringify({
+      statement,
+      topic_id: topicId || null,
+    }),
+  });
+}
+
+export function recordKnowledge(topicId: string, concept: string, summary: string, confidence: number): Promise<KnowledgeRecord> {
+  return apiRequest<KnowledgeRecord>("/api/learner/knowledge", {
+    method: "POST",
+    body: JSON.stringify({
+      topic_id: topicId,
+      concept,
+      summary,
+      evidence_kind: "inferred",
+      provenance: "learner_report",
+      confidence,
+    }),
+  });
+}
+
+export function correctKnowledge(knowledgeId: string, summary: string, correctionNote: string): Promise<KnowledgeRecord> {
+  return apiRequest<KnowledgeRecord>(`/api/learner/knowledge/${knowledgeId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ summary, correction_note: correctionNote }),
+  });
+}
+
+export function recordAssessment(
+  topicId: string,
+  promptSummary: string,
+  responseSummary: string,
+): Promise<AssessmentRecord> {
+  return apiRequest<AssessmentRecord>("/api/learner/assessments", {
+    method: "POST",
+    body: JSON.stringify({
+      topic_id: topicId,
+      prompt_summary: promptSummary,
+      response_summary: responseSummary,
+      outcome: "recorded",
+    }),
+  });
+}
+
+export function getSessionHistory(sessionId: string): Promise<SessionHistory> {
+  return apiRequest<SessionHistory>(`/api/sessions/${sessionId}/history`);
+}

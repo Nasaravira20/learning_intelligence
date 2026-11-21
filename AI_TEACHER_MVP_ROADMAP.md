@@ -1111,15 +1111,15 @@ Do not treat inferred knowledge as confirmed fact.
 
 ## Acceptance Tests
 
-- [ ] Learner profiles persist.
-- [ ] Knowledge records are topic-specific.
-- [ ] Assessment history is retained.
-- [ ] Observed and inferred knowledge are distinguishable.
-- [ ] Confidence information is persisted.
-- [ ] Learner corrections update the profile.
-- [ ] One learner cannot access another learner's records.
-- [ ] Relevant history can be retrieved for a session.
-- [ ] Restarting the application does not lose data.
+- [x] Learner profiles persist.
+- [x] Knowledge records are topic-specific.
+- [x] Assessment history is retained.
+- [x] Observed and inferred knowledge are distinguishable.
+- [x] Confidence information is persisted.
+- [x] Learner corrections update the profile.
+- [x] One learner cannot access another learner's records.
+- [x] Relevant history can be retrieved for a session.
+- [x] Restarting the application does not lose data.
 
 ## Phase Gate
 

@@ -2,7 +2,9 @@
 
 Phase 0 is a local learning-session shell. The browser talks to Next.js, Next.js proxies to FastAPI, and FastAPI stores learners, topics, and sessions in PostgreSQL.
 
-A session is created in `TOPIC_SELECTED` and stays there. Resume reloads that saved session and records when it was resumed. Gemini, pedagogy, and the learning state machine begin in later phases.
+A session is created in `TOPIC_SELECTED` and stays there. Resume reloads that saved session and records when it was resumed. Diagnosis, teaching, and pedagogy begin in later phases.
+
+A signed-in learner has a private record: profile, goals, preferences, topic knowledge, misconceptions, assessment history, and learning activities. Observed knowledge was demonstrated. Inferred knowledge is an estimate or a self-report, and a correction does not turn it into an observation. Session history is `GET /api/sessions/{session_id}/history`.
 
 Open http://localhost:3000 for the landing page. Create an account, then continue in Teacher Mode. Sign-in uses an HttpOnly cookie. Passwords are stored as bcrypt hashes and are not written to logs. A signed-in learner only sees their own sessions.
 
@@ -107,3 +109,7 @@ docker compose run --rm -v "${PWD}/docs:/docs" -e MODEL_STRATEGY_PATH=/docs/GEMI
 ```
 
 The report is `docs/GEMINI_MODEL_STRATEGY.md`. Internal cost figures in that report are estimates. The hard stop is USD $20.
+
+## Learner dashboard
+
+Open http://localhost:3000/learn after signing in. The page saves a display name, a background note, preferences, a goal, a self-reported knowledge record, and an assessment note. Self-reported knowledge is labeled “Inferred, not confirmed.” Reloading the page reads the same rows back from PostgreSQL.

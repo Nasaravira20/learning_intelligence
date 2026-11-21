@@ -7,13 +7,27 @@ from app.models.entities import (
     LearningTopic,
     User,
 )
+from app.models.learner_records import (
+    AssessmentRecord,
+    LearnerKnowledge,
+    LearningActivity,
+    LearningGoal,
+    LearningPreference,
+    MisconceptionRecord,
+)
 
 __all__ = [
     "AiModelCheck",
     "AiUsageRecord",
+    "AssessmentRecord",
     "AuthSession",
+    "LearnerKnowledge",
     "LearnerProfile",
+    "LearningActivity",
+    "LearningGoal",
+    "LearningPreference",
     "LearningSession",
     "LearningTopic",
+    "MisconceptionRecord",
     "User",
 ]

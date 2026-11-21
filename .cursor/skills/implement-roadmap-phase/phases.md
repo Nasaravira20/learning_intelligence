@@ -20,6 +20,8 @@ Phase 0 acceptance: frontend and backend start, they communicate, migrations wor
 
 Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 is approved.
 
+Phase 2 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 3 until the product owner approves this report.
+
 Later acceptance criteria stay in `AI_TEACHER_MVP_ROADMAP.md` sections 12 and 18. Do not mark a criterion done unless it was executed.
 
 # Completion report
@@ -239,5 +241,99 @@ Name: Gemini integration and model verification
 
 PRODUCT OWNER DECISION:
 [x] Approve
+[ ] Request changes
+```
+
+# Phase 2 completion report
+
+```text
+PHASE COMPLETION REPORT
+
+Phase: 2
+Name: Learner intelligence
+
+1. Implementation Summary
+- Each signed-in learner has a private record: profile, one preference row, goals, topic knowledge, misconceptions, assessment notes, and learning activities.
+- Observed knowledge requires a learner response or an assessment. Inferred knowledge, including every self-report from the dashboard, stays unconfirmed. A correction inserts a new row and keeps the original evidence kind.
+- Deterministic code owns the writes. Learner routes do not call Gemini and do not create AI usage rows. Another learner's records return 404.
+
+2. Deliverables
+- Learner data model
+- Alembic migration 0004
+- Authenticated learner APIs
+- Session history
+- Profile update
+- Basic learner dashboard on /learn
+- API and web tests
+
+3. Files Created
+- services/api/app/learner/__init__.py
+- services/api/app/learner/evidence.py
+- services/api/app/models/learner_records.py
+- services/api/app/schemas/learner.py
+- services/api/app/services/learner_intelligence.py
+- services/api/app/api/learner.py
+- services/api/alembic/versions/0004_learner_intelligence.py
+- services/api/tests/test_learner_intelligence.py
+- apps/web/src/lib/evidence.ts
+- apps/web/src/lib/evidence.test.ts
+- apps/web/src/components/LearnerDashboard.tsx
+
+4. Files Modified
+- services/api/app/models/entities.py
+- services/api/app/models/__init__.py
+- services/api/alembic/env.py
+- services/api/app/main.py
+- services/api/app/api/sessions.py
+- services/api/tests/conftest.py
+- services/api/tests/test_api.py
+- apps/web/src/lib/api.ts
+- apps/web/src/components/TeacherShell.tsx
+- apps/web/tsconfig.tsbuildinfo
+- README.md
+- AI_TEACHER_MVP_ROADMAP.md Phase 2 acceptance boxes
+
+5. Tests Executed
+- docker compose run --rm api python -m pytest
+- npm test in apps/web
+- curl.exe http://localhost:8000/health
+- curl.exe http://localhost:3000/health
+- Browser: signed in at http://localhost:3000/learn, saved profile, preferences, a goal, an inferred knowledge note, and an assessment, started a Chain rule session, opened its history, reloaded, restarted the API container, and reloaded again.
+
+6. Test Results
+- API: 42 passed, 0 failed, 0 skipped, in 21.32s
+- Web: 14 passed, 0 failed, 0 skipped, 5 files
+- Both health endpoints returned {"status":"ok","database":"ok"}
+- After reload and after docker compose restart api, the same name, background, unhurried pace, goal, inferred knowledge at confidence 0.40, assessment note, and Chain rule session were still on the page. Session history showed 1 knowledge record labeled inferred and 1 assessment note.
+
+7. Acceptance Criteria
+- Passed: learner profiles persist; knowledge records are topic-specific; assessment history is retained; observed and inferred knowledge are distinguishable; confidence is persisted; learner corrections update the profile and keep the evidence kind; one learner cannot access another learner's records; relevant history can be retrieved for a session; restarting the application does not lose data
+- Failed: none
+- Not implemented: none
+
+8. Known Limitations
+- No diagnosis, teaching, evaluation, adaptation, or retention. Session status stays topic selected.
+- The dashboard cannot mark a self-report as observed. Assessment outcomes are stored labels, not mastery decisions.
+- Public learner list endpoints still return display names from Phase 0. Private fields are not on that payload.
+- The correction dropdown does not preselect the current record after a reload. The record remains in the list.
+- Phase 2 made no Gemini calls. Cost for this phase is USD 0. Earlier verification spend stays on the Phase 1 usage rows.
+
+9. API Usage
+- Model: none
+- Requests: 0
+- Tokens: 0
+- Estimated cost: USD 0
+
+10. Demo Instructions
+- From the repository root: docker compose up --build
+- Open http://localhost:3000, create an account, and open /learn
+- Save a profile, a goal, and a knowledge note. The note is labeled "Inferred, not confirmed".
+- Start a session and use History for that topic. Reload the page. The record is read back from PostgreSQL.
+
+11. Remaining Issues
+- None that block the Phase 2 gate. Do not start Phase 3 until this report is approved.
+
+PRODUCT OWNER DECISION:
+[ ] Approve
 [ ] Request changes
 ```

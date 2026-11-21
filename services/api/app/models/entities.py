@@ -35,6 +35,10 @@ class LearnerProfile(Base):
             "length(btrim(display_name)) > 0",
             name="ck_learner_display_name_not_blank",
         ),
+        CheckConstraint(
+            "background_note IS NULL OR length(btrim(background_note)) > 0",
+            name="ck_learner_background_note_not_blank",
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -45,6 +49,7 @@ class LearnerProfile(Base):
         nullable=False,
     )
     display_name: Mapped[str] = mapped_column(String(80), nullable=False)
+    background_note: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

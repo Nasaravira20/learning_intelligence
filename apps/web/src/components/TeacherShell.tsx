@@ -19,6 +19,7 @@ import {
   UiError,
 } from "@/lib/api";
 import { slugify } from "@/lib/slug";
+import { LearnerDashboard } from "@/components/LearnerDashboard";
 
 function ErrorBanner({ error }: { error: UiError }) {
   return (
@@ -225,6 +226,12 @@ export function TeacherShell() {
       {healthError ? <ErrorBanner error={healthError} /> : null}
       {formError ? <ErrorBanner error={formError} /> : null}
       {loading ? <p className="text-stone-600">Loading your sessions.</p> : null}
+
+      <LearnerDashboard
+        topics={topics}
+        sessions={sessions}
+        onDisplayName={(name) => setAccount((current) => (current ? { ...current, display_name: name } : current))}
+      />
 
       <section className="grid gap-4">
         <form onSubmit={onCreateTopic} className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
