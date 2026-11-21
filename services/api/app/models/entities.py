@@ -95,7 +95,7 @@ class LearningSession(Base):
     __tablename__ = "learning_sessions"
     __table_args__ = (
         CheckConstraint(
-            "status IN ('TOPIC_SELECTED', 'DIAGNOSING', 'PLAN_READY')",
+            "status IN ('TOPIC_SELECTED', 'DIAGNOSING', 'PLAN_READY', 'TEACHING')",
             name="ck_learning_sessions_status",
         ),
     )

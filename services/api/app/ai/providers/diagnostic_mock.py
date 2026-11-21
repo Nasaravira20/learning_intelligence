@@ -2,6 +2,7 @@ import json
 
 from app.ai.errors import ProviderError
 from app.ai.types import GenerationRequest, GenerationResult
+from app.teaching.draft import scripted_lesson
 
 
 class DiagnosticMockProvider:
@@ -15,6 +16,8 @@ class DiagnosticMockProvider:
             payload = {"questions": _questions(request.prompt)}
         elif "Task: diagnostic_judgment" in request.prompt:
             payload = {"judgments": _judgments(request.prompt)}
+        elif "Task: teaching_lesson" in request.prompt:
+            payload = scripted_lesson(request.prompt)
         else:
             raise ProviderError("unsupported_operation", False)
         return GenerationResult(

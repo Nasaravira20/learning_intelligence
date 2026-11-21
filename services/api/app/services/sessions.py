@@ -112,6 +112,24 @@ def enter_plan(session: Session, item: LearningSession) -> LearningSession:
     return item
 
 
+def enter_teaching(session: Session, item: LearningSession) -> LearningSession:
+    if item.status == "TEACHING":
+        return item
+    if item.status != "PLAN_READY":
+        raise AppError("invalid_transition", "This session cannot start teaching.", 409)
+    item.status = "TEACHING"
+    item.updated_at = utcnow()
+    session.flush()
+    log_event(
+        logger,
+        logging.INFO,
+        "session_status_changed",
+        session_id=item.id,
+        status=item.status,
+    )
+    return item
+
+
 def resume_session(session: Session, session_id: UUID) -> LearningSession:
     item = get_session(session, session_id)
     now = utcnow()

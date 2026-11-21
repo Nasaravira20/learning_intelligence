@@ -130,6 +130,12 @@ The sequence is computed in the API. Routine tests keep `AI_PROVIDER=mock` and d
 
 After a plan is ready, Choose strategies records a deterministic selection for the current plan step. The same inputs and policy version return the same strategy ids. A missing prerequisite selects small-step instruction with concrete and worked examples. Repeated failure skips the strategy that already failed. Strong performance leaves scaffolding, worked examples, and guided practice off the list. The saved decision does not change the session away from plan ready, and `controls_teaching` stays false. Unreviewed registry entries are not a production selection. `GET /api/sessions/{session_id}/pedagogy-selection` returns the saved decision to the signed-in learner only.
 
+## Teaching
+
+Start lesson runs the saved strategy choice as structured activities for the current plan objective. The session moves to teaching. A check sits before the last activity. The first hint does not contain the complete answer, and the answer is not returned by the API. Continue lowers the next activity's support by one step. I need more support inserts a high-support activity from a strategy already on the selection. Reloading or Resume keeps the same lesson. The lesson stays pending factuality review, and the session does not move on to evaluation.
+
+Local teaching uses `AI_PROVIDER=mock` and does not call Gemini.
+
 ## Pedagogy registry
 
 `research/strategies/` and `research/sources/` hold the P0 catalogue. Bibliographic metadata was checked on 2026-11-21. The notes are original and pending human review, so none of the strategies can be selected in production. `GET /api/pedagogy/registry` returns the catalogue and an empty `production_selectable_strategy_ids` list. Ingestion and the review checklist are in `docs/RESEARCH_INGESTION.md` and `docs/HUMAN_REVIEW_CHECKLIST.md`. This phase does not choose a strategy and does not start teaching.

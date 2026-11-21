@@ -10,6 +10,7 @@ import {
   UiError,
   chooseStrategies,
   createLearningPlan,
+  startLesson,
   getDiagnosis,
   getLearningPlan,
   getStrategySelection,
@@ -47,25 +48,29 @@ export function PlanPanel({
   const [pending, setPending] = useState(false);
 
   useEffect(() => {
-    if (session.status !== "DIAGNOSING" && session.status !== "PLAN_READY") {
+    if (session.status !== "DIAGNOSING" && session.status !== "PLAN_READY" && session.status !== "TEACHING") {
       return;
     }
     let active = true;
-    getDiagnosis(session.id)
-      .then((report) => {
-        if (!active) {
-          return;
-        }
-        setDiagnosisComplete(report.status === "completed");
-        setFollowUpOpen(report.status === "in_progress" && session.status === "PLAN_READY");
-      })
-      .catch(() => {
-        if (active) {
-          setDiagnosisComplete(false);
-          setFollowUpOpen(false);
-        }
-      });
-    if (session.status === "PLAN_READY") {
+    if (session.status === "TEACHING") {
+      setDiagnosisComplete(true);
+    } else {
+      getDiagnosis(session.id)
+        .then((report) => {
+          if (!active) {
+            return;
+          }
+          setDiagnosisComplete(report.status === "completed");
+          setFollowUpOpen(report.status === "in_progress" && session.status === "PLAN_READY");
+        })
+        .catch(() => {
+          if (active) {
+            setDiagnosisComplete(false);
+            setFollowUpOpen(false);
+          }
+        });
+    }
+    if (session.status === "PLAN_READY" || session.status === "TEACHING") {
       getLearningPlan(session.id)
         .then((next) => {
           if (active) {
@@ -83,23 +88,25 @@ export function PlanPanel({
           }
           setError(uiError);
         });
-      getStrategySelection(session.id)
-        .then((next) => {
-          if (active) {
-            setSelection(next);
-          }
-        })
-        .catch((caught) => {
-          if (!active) {
-            return;
-          }
-          const uiError = toUiError(caught);
-          if (uiError.code === "selection_not_found") {
-            setSelection(null);
-            return;
-          }
-          setError(uiError);
-        });
+      if (session.status === "PLAN_READY") {
+        getStrategySelection(session.id)
+          .then((next) => {
+            if (active) {
+              setSelection(next);
+            }
+          })
+          .catch((caught) => {
+            if (!active) {
+              return;
+            }
+            const uiError = toUiError(caught);
+            if (uiError.code === "selection_not_found") {
+              setSelection(null);
+              return;
+            }
+            setError(uiError);
+          });
+      }
     }
     return () => {
       active = false;
@@ -145,6 +152,19 @@ export function PlanPanel({
     }
   }
 
+  async function onStart() {
+    setError(null);
+    setPending(true);
+    try {
+      const lesson = await startLesson(session.id);
+      onSession({ ...session, status: lesson.session_status });
+    } catch (caught) {
+      setError(toUiError(caught));
+    } finally {
+      setPending(false);
+    }
+  }
+
   async function onFollowUp() {
     setError(null);
     setPending(true);
@@ -159,7 +179,7 @@ export function PlanPanel({
     }
   }
 
-  if (session.status !== "DIAGNOSING" && session.status !== "PLAN_READY") {
+  if (session.status !== "DIAGNOSING" && session.status !== "PLAN_READY" && session.status !== "TEACHING") {
     return null;
   }
   if (!diagnosisComplete && plan === null) {
@@ -208,7 +228,7 @@ export function PlanPanel({
           </ol>
           {followUpOpen ? (
             <p className="text-stone-600">Finish the new diagnosis, then revise the plan.</p>
-          ) : (
+          ) : session.status === "PLAN_READY" ? (
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
@@ -234,9 +254,17 @@ export function PlanPanel({
               >
                 Choose strategies
               </button>
+              <button
+                type="button"
+                onClick={onStart}
+                disabled={pending || selection === null}
+                className="rounded bg-stone-900 px-3 py-2 text-white disabled:opacity-50"
+              >
+                Start lesson
+              </button>
             </div>
-          )}
-          {selection ? (
+          ) : null}
+          {session.status === "PLAN_READY" && selection ? (
             <div className="rounded border border-stone-200 px-3 py-2">
               <p className="font-medium">
                 Benchmark strategy: {selection.primary_strategy}. Teaching has not started.

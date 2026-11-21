@@ -20,7 +20,7 @@ Phase 0 acceptance: frontend and backend start, they communicate, migrations wor
 
 Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 is approved.
 
-Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is approved. The product owner approved starting Phase 6 on 2026-11-21. Phase 6 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 7 until the product owner approves the Phase 6 report.
+Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is approved. The product owner approved starting Phase 6 on 2026-11-21. Phase 6 is approved. The product owner approved starting Phase 7 on 2026-11-21. Phase 7 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 8 until the product owner approves the Phase 7 report.
 
 Later acceptance criteria stay in `AI_TEACHER_MVP_ROADMAP.md` sections 12 and 18. Do not mark a criterion done unless it was executed.
 
@@ -733,9 +733,105 @@ Name: Pedagogy Selection Engine
 - Do not treat the benchmark primary as a production teaching choice while production_primary_strategy is empty.
 
 11. Remaining Issues
-- None that block the Phase 6 gate. Do not start Phase 7 until this report is approved. Do not let this selector run a teaching session until the benchmark and the registry review are accepted.
+- None that block the Phase 6 gate. The product owner approved starting Phase 7 on 2026-11-21. The selector still does not start teaching by itself.
+
+PRODUCT OWNER DECISION:
+[x] Approve
+[ ] Request changes
+```
+
+# Phase 7 completion report
+
+```text
+PHASE COMPLETION REPORT
+
+Phase: 7
+Name: Teaching Engine
+
+1. Implementation Summary
+- Starting a lesson executes the saved strategy choice as structured activities for the current plan objective. The session moves from PLAN_READY to TEACHING. Evaluation and mastery are not started.
+- The primary strategy and each supporting strategy appear as their own activity. A check for understanding is placed before the last activity. Explanations and examples carry an example. Worked examples carry steps.
+- The complete answer is stored for a later evaluator and is not returned. The first hint cannot contain it. Continue lowers the next activity's support by one step. A struggle inserts a high-support activity that uses a strategy already on the selection.
+- Invalid model output, including an unselected strategy id, is rejected and leaves the session on PLAN_READY. The lesson stays pending_human_review. No live Gemini call was made.
+
+2. Deliverables
+- Teaching service
+- Lesson and activity schemas
+- Prompt template
+- Teaching session UI
+- Hint system
+- Teaching history
+- Automated tests
+- docs/TEACHING_REVIEW_CHECKLIST.md
+
+3. Files Created
+- services/api/app/teaching/
+- services/api/app/models/teaching.py
+- services/api/app/schemas/teaching.py
+- services/api/app/api/teaching.py
+- services/api/alembic/versions/0008_teaching.py
+- services/api/tests/test_teaching.py
+- services/api/tests/test_teaching_policy.py
+- apps/web/src/components/TeachingPanel.tsx
+- docs/TEACHING_REVIEW_CHECKLIST.md
+
+4. Files Modified
+- services/api/app/ai/providers/diagnostic_mock.py
+- services/api/app/services/sessions.py
+- services/api/app/models/entities.py
+- services/api/app/models/__init__.py
+- services/api/alembic/env.py
+- services/api/app/main.py
+- services/api/tests/conftest.py
+- services/api/tests/test_api.py
+- apps/web/src/lib/api.ts
+- apps/web/src/components/PlanPanel.tsx
+- apps/web/src/components/TeacherShell.tsx
+- README.md
+- AI_TEACHER_MVP_ROADMAP.md
+- .cursor/skills/implement-roadmap-phase/phases.md
+
+5. Tests Executed
+- Exact commands:
+- docker compose run --rm --build api python -m pytest
+  (working directory: repository root)
+- npm test
+  (working directory: apps/web)
+- npx tsc --noEmit
+  (working directory: apps/web)
+
+6. Test Results
+- API: 90 passed, 0 failed, 0 skipped, in 109.32s.
+- Web: 16 passed, 0 failed, 0 skipped, 5 files. npx tsc --noEmit exited 0.
+
+7. Acceptance Criteria
+- Passed: Teaching content aligns with learning objectives. Selected strategies are actually executed. Activities are structured and not just conversational paragraphs. Explanations include relevant examples. Understanding checks occur during instruction. Hints do not reveal the complete answer immediately. Support can gradually fade. Learner struggles influence subsequent activities. Sessions persist and resume.
+- Failed: none
+- Not implemented: Human reviewers evaluate factuality and teaching quality. The lesson record stays pending_human_review. The checklist is docs/TEACHING_REVIEW_CHECKLIST.md. No person has recorded that review.
+
+8. Known Limitations
+- The lesson uses the benchmark selection. The registry is still pending human review, so this is not a production-certified strategy choice.
+- controls_teaching on the selection row stays false. Teaching starts only from the explicit lesson action.
+- Finishing the activities does not evaluate the answer or award mastery. The session remains TEACHING.
+- This phase made no live Gemini calls. Routine runs use the mock provider. Cost is USD 0.
+
+9. API Usage
+- Model: none
+- Requests: 0
+- Tokens: 0
+- Estimated cost: USD 0
+
+10. Demo Instructions
+- From the repository root: docker compose up --build
+- Sign in, open /learn, build a plan, choose strategies, then start the lesson.
+- Show a hint. The hint is not the complete answer. Continue lowers the next activity's support. I need more support adds a high-support activity.
+- Reload the page. The same lesson and status Teaching remain. Evaluation has not started.
+
+11. Remaining Issues
+- A person still has to review factuality and teaching quality. Do not start Phase 8 until this report is approved.
 
 PRODUCT OWNER DECISION:
 [ ] Approve
 [ ] Request changes
 ```
+

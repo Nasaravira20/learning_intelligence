@@ -621,3 +621,62 @@ export function chooseStrategies(sessionId: string): Promise<PedagogySelection> 
 export function getStrategySelection(sessionId: string): Promise<PedagogySelection> {
   return apiRequest<PedagogySelection>(`/api/sessions/${sessionId}/pedagogy-selection`);
 }
+
+export type TeachingHint = {
+  position: number;
+  text: string;
+};
+
+export type TeachingActivity = {
+  id: string;
+  position: number;
+  strategy_id: string;
+  kind: string;
+  title: string;
+  prompt: string;
+  example: string | null;
+  worked_steps: string[];
+  support_level: string;
+  status: string;
+  hints_available: number;
+  hints_revealed: TeachingHint[];
+  inserted_for_struggle: boolean;
+};
+
+export type TeachingLesson = {
+  id: string;
+  session_id: string;
+  selection_id: string;
+  objective_code: string;
+  status: string;
+  session_status: string;
+  review_status: string;
+  strategy_ids: string[];
+  current_activity_id: string | null;
+  activities: TeachingActivity[];
+  created_at: string;
+  updated_at: string;
+};
+
+export function startLesson(sessionId: string): Promise<TeachingLesson> {
+  return apiRequest<TeachingLesson>(`/api/sessions/${sessionId}/teaching`, { method: "POST" });
+}
+
+export function getLesson(sessionId: string): Promise<TeachingLesson> {
+  return apiRequest<TeachingLesson>(`/api/sessions/${sessionId}/teaching`);
+}
+
+export function revealHint(sessionId: string): Promise<TeachingLesson> {
+  return apiRequest<TeachingLesson>(`/api/sessions/${sessionId}/teaching/hint`, { method: "POST" });
+}
+
+export function submitTeachingAttempt(
+  sessionId: string,
+  outcome: "correct" | "incorrect" | "struggled",
+  answerText: string,
+): Promise<TeachingLesson> {
+  return apiRequest<TeachingLesson>(`/api/sessions/${sessionId}/teaching/attempt`, {
+    method: "POST",
+    body: JSON.stringify({ outcome, answer_text: answerText }),
+  });
+}

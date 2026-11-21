@@ -1370,15 +1370,15 @@ This is an example sequence. The selector should determine whether it is appropr
 
 ## Acceptance Tests
 
-- [ ] Teaching content aligns with learning objectives.
-- [ ] Selected strategies are actually executed.
-- [ ] Activities are structured and not just conversational paragraphs.
-- [ ] Explanations include relevant examples.
-- [ ] Understanding checks occur during instruction.
-- [ ] Hints do not reveal the complete answer immediately.
-- [ ] Support can gradually fade.
-- [ ] Learner struggles influence subsequent activities.
-- [ ] Sessions persist and resume.
+- [x] Teaching content aligns with learning objectives.
+- [x] Selected strategies are actually executed.
+- [x] Activities are structured and not just conversational paragraphs.
+- [x] Explanations include relevant examples.
+- [x] Understanding checks occur during instruction.
+- [x] Hints do not reveal the complete answer immediately.
+- [x] Support can gradually fade.
+- [x] Learner struggles influence subsequent activities.
+- [x] Sessions persist and resume.
 - [ ] Human reviewers evaluate factuality and teaching quality.
 
 ## Phase Gate

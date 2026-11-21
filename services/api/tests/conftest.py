@@ -84,7 +84,8 @@ def client(migrated_database: str):
                 "learner_knowledge, misconception_records, assessment_records, learning_activities, "
                 "learning_objectives, objective_prerequisites, diagnostic_attempts, "
                 "diagnostic_questions, diagnostic_responses, topic_concepts, "
-                "learning_plans, learning_plan_steps, pedagogy_selections "
+                "learning_plans, learning_plan_steps, pedagogy_selections, "
+                "teaching_attempts, teaching_hints, teaching_activities, teaching_lessons "
                 "RESTART IDENTITY CASCADE"
             )
         )

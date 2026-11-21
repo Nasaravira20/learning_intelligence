@@ -21,6 +21,7 @@ import {
 import { slugify } from "@/lib/slug";
 import { DiagnosticPanel } from "@/components/DiagnosticPanel";
 import { PlanPanel } from "@/components/PlanPanel";
+import { TeachingPanel } from "@/components/TeachingPanel";
 import { LearnerDashboard } from "@/components/LearnerDashboard";
 
 function ErrorBanner({ error }: { error: UiError }) {
@@ -39,6 +40,9 @@ function sessionStatusLabel(status: string): string {
   }
   if (status === "PLAN_READY") {
     return "Plan ready";
+  }
+  if (status === "TEACHING") {
+    return "Teaching";
   }
   if (status === "TOPIC_SELECTED") {
     return "Topic selected";
@@ -367,6 +371,7 @@ export function TeacherShell() {
                 onSession={replaceSession}
                 onRefresh={() => setRefreshKey((value) => value + 1)}
               />
+              <TeachingPanel session={session} refreshKey={refreshKey} />
             </li>
           ))}
         </ul>
