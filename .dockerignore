@@ -1,0 +1,11 @@
+*
+!services
+!services/api
+!services/api/**
+!research
+!research/**
+services/api/.venv
+services/api/**/__pycache__
+services/api/**/.pytest_cache
+services/api/**/*.pyc
+**/.env

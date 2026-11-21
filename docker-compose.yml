@@ -20,7 +20,8 @@ services:
 
   api:
     build:
-      context: ./services/api
+      context: .
+      dockerfile: services/api/Dockerfile
     environment:
       DATABASE_URL: postgresql+psycopg://ai_teacher:ai_teacher@db:5432/ai_teacher
       LOG_LEVEL: INFO

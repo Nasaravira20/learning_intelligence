@@ -1,0 +1,31 @@
+strategy_id: self_explanation
+name: Self-Explanation
+version: 1.0.0
+category: understanding
+description: >
+  Ask the learner to explain why a step, answer, or example works.
+learning_objectives:
+  - reasoning
+  - connection_between_ideas
+suitable_contexts:
+  - partial_understanding
+  - after_a_correct_answer
+learner_conditions:
+  - the_learner_has_an_answer_or_example_to_explain
+avoid_or_modify_conditions:
+  - the_learner_has_no_example_or_procedure_to_explain_yet
+implementation_steps:
+  - Point at one step, answer, or example.
+  - Ask why that step is used or what would change if an assumption changed.
+  - Treat a fluent explanation as a reasoning sample, not as mastery by itself.
+  - Follow a weak explanation with a smaller question or an example.
+assessment_signals:
+  - explanation_names_a_reason
+  - explanation_distinguishes_related_ideas
+limitations:
+  - A fluent explanation alone does not prove the learner can solve a new case.
+  - Dunlosky 2013 and Weinstein 2018 are bibliographic pointers for self-explanation and elaboration. Their ratings are not copied.
+sources:
+  - dunlosky_2013
+  - weinstein_2018
+review_status: pending_human_review

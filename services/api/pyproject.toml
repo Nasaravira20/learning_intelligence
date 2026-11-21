@@ -13,6 +13,7 @@ dependencies = [
   "bcrypt>=4.2",
   "email-validator>=2.2",
   "google-genai>=1.0",
+  "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]

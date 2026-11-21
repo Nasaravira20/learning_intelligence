@@ -20,7 +20,7 @@ Phase 0 acceptance: frontend and backend start, they communicate, migrations wor
 
 Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 is approved.
 
-Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 5 until the product owner approves the Phase 4 report.
+Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 6 until the product owner approves the Phase 5 report.
 
 Later acceptance criteria stay in `AI_TEACHER_MVP_ROADMAP.md` sections 12 and 18. Do not mark a criterion done unless it was executed.
 
@@ -553,7 +553,97 @@ Name: Learning Planner
 - Do not set AI_PROVIDER=gemini for this demo. That path is not part of the verified Phase 4 run.
 
 11. Remaining Issues
-- None that block the Phase 4 gate. Do not start Phase 5 until this report is approved.
+- None that block the Phase 4 gate. The product owner approved starting Phase 5 on 2026-11-21.
+
+PRODUCT OWNER DECISION:
+[x] Approve
+[ ] Request changes
+```
+
+# Phase 5 completion report
+
+```text
+PHASE COMPLETION REPORT
+
+Phase: 5
+Name: Research Library and Pedagogy Registry
+
+1. Implementation Summary
+- The P0 catalogue lives in research/strategies and research/sources. research/registry.yaml locks each strategy id to version 1.0.0 and locks the catalogue at 2026.11.21.
+- Deterministic validation rejects a missing id, a duplicate id, a missing version, a missing required field, a source reference that does not resolve, a filename that does not match the id, a reviewed entry with no reviewer, and any stored PDF, HTML, or text capture.
+- Bibliographic metadata was checked on 2026-11-21. Weinstein 2018 is CC BY 4.0. The other DOI records were confirmed on Crossref and their licenses are recorded as shown there. Rosenshine was checked on the AFT page. Bloom was checked on ERIC ED053419.
+- Agent-written notes stay pending_human_review. Production selection returns no strategy ids until a person sets review_status to reviewed and sets reviewed_by on the strategy and its sources. This gate is not the Phase 6 selector.
+- The Cambridge Handbook URL in the roadmap returned HTTP 404 and had no DOI or year, so it was not ingested. No paper or book is stored. No live Gemini call was made.
+
+2. Deliverables
+- Research source registry
+- Pedagogy strategy registry
+- Initial P0 strategy definitions
+- Registry validator
+- Source metadata
+- Research ingestion documentation
+- Human review checklist
+
+3. Files Created
+- research/registry.yaml
+- research/strategies/*.yaml
+- research/sources/*.yaml
+- services/api/app/pedagogy/__init__.py
+- services/api/app/pedagogy/schemas.py
+- services/api/app/pedagogy/registry.py
+- services/api/app/api/pedagogy.py
+- services/api/app/schemas/pedagogy.py
+- services/api/tests/test_pedagogy_registry.py
+- docs/RESEARCH_INGESTION.md
+- docs/HUMAN_REVIEW_CHECKLIST.md
+- .dockerignore
+
+4. Files Modified
+- services/api/pyproject.toml
+- services/api/Dockerfile
+- services/api/app/main.py
+- docker-compose.yml
+- README.md
+- AI_TEACHER_MVP_ROADMAP.md
+- .cursor/skills/implement-roadmap-phase/phases.md
+
+5. Tests Executed
+- Exact commands:
+- docker compose run --rm --build api python -m pytest
+  (working directory: repository root)
+
+6. Test Results
+- API: 70 passed, 0 failed, 0 skipped, in 50.09s.
+- Web tests were not run. The web app was not changed.
+- No browser flow was added. The registry is read through GET /api/pedagogy/registry.
+
+7. Acceptance Criteria
+- Passed: Every P0 strategy has a stable ID. Every strategy has a version. Required fields are present. Source references resolve to valid registry entries. Bibliographic metadata is verified. Access and licensing information is recorded. Unreviewed strategies cannot be selected in production. Invalid entries fail validation. No unauthorized copyrighted content is stored. LLM-generated research summaries receive human review, as a gate: pending summaries are excluded from production selection until a person sets reviewed_by.
+- Failed: none
+- Not implemented: none
+
+8. Known Limitations
+- No strategy is selectable in production yet. The notes are agent-written and still pending human review.
+- Mayer 2022 and the National Academies 2018 report are catalogued and are not linked to a P0 strategy.
+- The Cambridge Handbook of Multimedia Learning was not ingested.
+- Phase 6 selection, teaching, evaluation, and retention are not implemented.
+- This phase made no live Gemini calls. Cost is USD 0.
+- There is no strategy-management dashboard.
+
+9. API Usage
+- Model: none
+- Requests: 0
+- Tokens: 0
+- Estimated cost: USD 0
+
+10. Demo Instructions
+- From the repository root: docker compose up --build
+- GET http://localhost:8000/api/pedagogy/registry
+- The response lists 12 strategies and an empty production_selectable_strategy_ids array.
+- Do not mark an entry reviewed until the checklist in docs/HUMAN_REVIEW_CHECKLIST.md has been completed by a person.
+
+11. Remaining Issues
+- None that block the Phase 5 gate. A person still has to review the notes before any strategy can be selected in production. Do not start Phase 6 until this report is approved.
 
 PRODUCT OWNER DECISION:
 [ ] Approve

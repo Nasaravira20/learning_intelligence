@@ -1,0 +1,30 @@
+source_id: weinstein_2018
+title: Teaching the Science of Learning
+authors:
+  - Yana Weinstein
+  - Christopher R. Madan
+  - Megan A. Sumeracki
+year: 2018
+publication: "Cognitive Research: Principles and Implications"
+doi: 10.1186/s41235-017-0087-y
+url: https://doi.org/10.1186/s41235-017-0087-y
+access_type: open_access
+license: CC BY 4.0
+retrieved_date: 2026-11-21
+relevant_sections:
+  - Spacing
+  - Retrieval practice
+  - Elaboration
+  - Concrete examples
+evidence_notes: >
+  Crossref confirmed this 2018 open article by Weinstein, Madan, and Sumeracki.
+  The registry uses it as a bibliographic pointer for spacing, retrieval, elaboration,
+  and concrete examples. This note is an original summary and does not reproduce the article.
+limitations:
+  - The full article is not stored.
+  - A human still has to review this summary before the source can be selected in production.
+review_status: pending_human_review
+metadata_verification:
+  checked_on: 2026-11-21
+  method: crossref
+  identifier: 10.1186/s41235-017-0087-y

@@ -1,0 +1,26 @@
+source_id: nasem_2018
+title: "How People Learn II: Learners, Contexts, and Cultures"
+authors:
+  - National Academies of Sciences, Engineering, and Medicine
+  - "Committee on How People Learn II: The Science and Practice of Learning"
+year: 2018
+publication: National Academies Press
+doi: 10.17226/24783
+url: https://doi.org/10.17226/24783
+access_type: publisher
+license: Crossref did not list a license on 2026-11-21. The publisher is the National Academies Press.
+retrieved_date: 2026-11-21
+relevant_sections:
+  - Learners, contexts, and cultures
+evidence_notes: >
+  Crossref confirmed the 2018 National Academies report How People Learn II, DOI
+  10.17226/24783. The catalogue page returned HTTP 403 to an automated check, so this
+  record uses the DOI rather than claiming a successful download. The book is not stored.
+limitations:
+  - No P0 strategy depends on this source yet.
+  - Free-to-read status was not confirmed because the catalogue request was forbidden.
+review_status: pending_human_review
+metadata_verification:
+  checked_on: 2026-11-21
+  method: crossref
+  identifier: 10.17226/24783

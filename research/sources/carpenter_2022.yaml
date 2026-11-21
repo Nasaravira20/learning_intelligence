@@ -1,0 +1,28 @@
+source_id: carpenter_2022
+title: The Science of Effective Learning With Spacing and Retrieval Practice
+authors:
+  - Shana K. Carpenter
+  - Steven C. Pan
+  - Andrew C. Butler
+year: 2022
+publication: Nature Reviews Psychology
+doi: 10.1038/s44159-022-00089-1
+url: https://doi.org/10.1038/s44159-022-00089-1
+access_type: publisher
+license: Crossref lists Springer text-and-data-mining terms. No Creative Commons reader license was listed.
+retrieved_date: 2026-11-21
+relevant_sections:
+  - Spacing
+  - Retrieval practice
+evidence_notes: >
+  Crossref confirmed the 2022 review by Carpenter, Pan, and Butler in Nature Reviews
+  Psychology, volume 1, issue 9, pages 496-511. It is catalogued only as a pointer to
+  spacing and retrieval practice. The review text is not stored.
+limitations:
+  - The article is not open access in the Crossref license record checked on 2026-11-21.
+  - No findings are quoted and no effect sizes are copied.
+review_status: pending_human_review
+metadata_verification:
+  checked_on: 2026-11-21
+  method: crossref
+  identifier: 10.1038/s44159-022-00089-1

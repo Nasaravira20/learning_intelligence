@@ -1,0 +1,30 @@
+strategy_id: elaborative_interrogation
+name: Elaborative Interrogation
+version: 1.0.0
+category: understanding
+description: >
+  Ask why a stated fact or step is true and how it connects to something the learner already knows.
+learning_objectives:
+  - deeper_understanding
+  - connection_to_prior_knowledge
+suitable_contexts:
+  - a_fact_or_step_is_already_stated
+  - partial_understanding
+learner_conditions:
+  - the_learner_has_enough_prior_knowledge_to_attempt_a_reason
+avoid_or_modify_conditions:
+  - the_learner_has_no_prior_knowledge_to_connect
+implementation_steps:
+  - State one fact or step that is already on the table.
+  - Ask why it holds or how it relates to an earlier concept.
+  - If the learner cannot start, supply a smaller comparison instead of demanding a reason.
+  - Record whether the reason connects to prior knowledge or only repeats the prompt.
+assessment_signals:
+  - reason_connects_to_prior_knowledge
+  - reason_is_specific
+limitations:
+  - Why-questions are a poor first move when the prerequisite idea is missing.
+  - Dunlosky 2013 reviews this technique. This entry does not copy that review's ratings.
+sources:
+  - dunlosky_2013
+review_status: pending_human_review

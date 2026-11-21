@@ -1,0 +1,33 @@
+source_id: dunlosky_2013
+title: Improving Students' Learning With Effective Learning Techniques
+authors:
+  - John Dunlosky
+  - Katherine A. Rawson
+  - Elizabeth J. Marsh
+  - Mitchell J. Nathan
+  - Daniel T. Willingham
+year: 2013
+publication: Psychological Science in the Public Interest
+doi: 10.1177/1529100612453266
+url: https://doi.org/10.1177/1529100612453266
+access_type: publisher
+license: Crossref lists a SAGE text-and-data-mining license. No Creative Commons reader license was listed.
+retrieved_date: 2026-11-21
+relevant_sections:
+  - Practice testing
+  - Distributed practice
+  - Elaborative interrogation
+  - Self-explanation
+evidence_notes: >
+  Crossref confirmed the 2013 review by Dunlosky, Rawson, Marsh, Nathan, and Willingham
+  in Psychological Science in the Public Interest, volume 14, issue 1, pages 4-58.
+  The registry cites it for practice testing, distributed practice, elaborative interrogation,
+  and self-explanation. The paper itself is not stored, and its utility ratings are not copied.
+limitations:
+  - Reader access is publisher-controlled.
+  - This entry records no effect sizes and no quotations.
+review_status: pending_human_review
+metadata_verification:
+  checked_on: 2026-11-21
+  method: crossref
+  identifier: 10.1177/1529100612453266

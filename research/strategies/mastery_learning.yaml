@@ -1,0 +1,31 @@
+strategy_id: mastery_learning
+name: Mastery Learning
+version: 1.0.0
+category: assessment
+description: >
+  Keep the learner on an objective until the evidence meets its completion criteria, then move on.
+learning_objectives:
+  - objective_met
+  - correct_before_progress
+suitable_contexts:
+  - required_objective
+  - before_a_dependent_objective
+learner_conditions:
+  - the_objective_has_explicit_completion_criteria
+avoid_or_modify_conditions:
+  - progress_would_depend_on_confidence_or_a_single_correct_answer
+implementation_steps:
+  - State the objective and the evidence that would meet it.
+  - Assess the current attempt.
+  - If the evidence is short, teach the missing part and ask again.
+  - Advance only when the stored evidence meets the completion criteria.
+assessment_signals:
+  - completion_criteria_met
+  - reteach_when_evidence_is_short
+limitations:
+  - Confidence and one correct answer are not mastery.
+  - Bloom 1968 is catalogued through its ERIC record. The paper is not stored.
+sources:
+  - bloom_1968
+  - black_wiliam_1998
+review_status: pending_human_review

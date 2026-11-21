@@ -1,0 +1,32 @@
+strategy_id: worked_examples
+name: Worked Examples
+version: 1.0.0
+category: instruction
+description: >
+  Show a complete solution with the reason for each step, then ask the learner
+  to solve a related problem.
+learning_objectives:
+  - procedure
+  - initial_understanding
+suitable_contexts:
+  - new_procedure
+  - missing_prerequisite
+learner_conditions:
+  - the_learner_needs_a_model_before_independent_work
+avoid_or_modify_conditions:
+  - the_learner_already_solves_this_problem_type_with_sound_reasoning
+implementation_steps:
+  - Present one problem.
+  - Show the full solution.
+  - Explain why each step is there.
+  - Ask the learner to solve a related problem without copying the same numbers.
+assessment_signals:
+  - related_problem_solved
+  - step_reasoning
+limitations:
+  - Sweller 1988 addresses cognitive load during problem solving. It is not stored as a worked-example manual.
+  - A fluent copy of the example is not evidence that the learner can vary the method.
+sources:
+  - sweller_1988
+  - rosenshine_2012
+review_status: pending_human_review

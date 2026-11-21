@@ -1,0 +1,30 @@
+strategy_id: concrete_examples
+name: Concrete Examples
+version: 1.0.0
+category: understanding
+description: >
+  Show a case that fits the idea and a nearby case that does not, then ask the learner to classify a new case.
+learning_objectives:
+  - distinguish_the_concept
+  - classify_new_cases
+suitable_contexts:
+  - new_concept
+  - confusable_concepts
+learner_conditions:
+  - at_least_one_positive_case_and_one_contrasting_case_can_be_shown
+avoid_or_modify_conditions:
+  - the_example_uses_features_that_are_irrelevant_to_the_definition
+implementation_steps:
+  - Present one case that fits the idea.
+  - Present one nearby case that does not fit.
+  - Name the feature that separates them.
+  - Ask the learner to classify a new case and say which feature they used.
+assessment_signals:
+  - new_case_classified
+  - feature_named
+limitations:
+  - An example the learner cannot explain may be memorized surface detail.
+  - Weinstein 2018 is the bibliographic pointer for concrete examples. The article is not stored.
+sources:
+  - weinstein_2018
+review_status: pending_human_review

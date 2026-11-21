@@ -1,0 +1,29 @@
+source_id: rosenshine_2012
+title: Principles of Instruction
+authors:
+  - Barak Rosenshine
+year: 2012
+publication: American Educator
+doi:
+url: https://www.aft.org/ae/spring2012/rosenshine
+access_type: free_to_read
+license: Not stated on the page checked on 2026-11-21. The page itself returned HTTP 200.
+retrieved_date: 2026-11-21
+relevant_sections:
+  - Present new material in small steps
+  - Provide models
+  - Guide student practice
+  - Check for understanding
+evidence_notes: >
+  The American Federation of Teachers page title was Principles of Instruction on 2026-11-21.
+  The roadmap identifies the author as Barak Rosenshine, American Educator, 2012.
+  This entry points at that essay for small steps, models, guided practice, and checks
+  for understanding. The essay is not copied into the repository.
+limitations:
+  - No DOI was listed in the starter bibliography, so this record was checked from the publisher page rather than Crossref.
+  - A reader license was not stated on the page that was checked.
+review_status: pending_human_review
+metadata_verification:
+  checked_on: 2026-11-21
+  method: publisher_page
+  identifier: https://www.aft.org/ae/spring2012/rosenshine

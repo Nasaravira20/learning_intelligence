@@ -1,0 +1,32 @@
+strategy_id: spaced_practice
+name: Spaced Practice
+version: 1.0.0
+category: memory_and_retrieval
+description: >
+  Return to a concept after a gap instead of treating one successful attempt as finished.
+learning_objectives:
+  - retention
+  - revision
+suitable_contexts:
+  - previously_taught_concepts
+  - revision
+learner_conditions:
+  - the_concept_was_studied_earlier
+avoid_or_modify_conditions:
+  - the_concept_has_not_been_taught
+implementation_steps:
+  - Record when the learner last studied the concept.
+  - Schedule a later retrieval check. The interval is configurable and is not a universal schedule.
+  - Ask the learner to recall the idea before showing it again.
+  - Use the result to decide the next review. Do not mark the concept finished from one success.
+assessment_signals:
+  - delayed_recall
+  - review_completed
+limitations:
+  - One interval does not fit every learner.
+  - Spacing is not a reason to skip a missing prerequisite.
+sources:
+  - weinstein_2018
+  - carpenter_2022
+  - dunlosky_2013
+review_status: pending_human_review

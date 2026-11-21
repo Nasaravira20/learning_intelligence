@@ -1,0 +1,31 @@
+strategy_id: guided_practice
+name: Guided Practice
+version: 1.0.0
+category: practice
+description: >
+  Ask the learner to take the next step with help available, then reduce that help.
+learning_objectives:
+  - application
+  - independent_practice
+suitable_contexts:
+  - after_a_model
+  - partial_understanding
+learner_conditions:
+  - a_model_or_explanation_has_been_given
+avoid_or_modify_conditions:
+  - the_learner_has_no_model_for_the_procedure
+implementation_steps:
+  - Present a problem after a model or explanation.
+  - Ask the learner to complete the first step.
+  - Offer a hint only when the learner is stuck.
+  - Ask for an independent attempt once the hints are no longer needed.
+assessment_signals:
+  - step_completed_with_less_help
+  - independent_attempt
+limitations:
+  - Hints that reveal the answer remove the practice.
+  - Guided practice comes after a model, not instead of one.
+sources:
+  - rosenshine_2012
+  - wood_1976
+review_status: pending_human_review

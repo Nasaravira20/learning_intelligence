@@ -1,0 +1,30 @@
+strategy_id: scaffolding
+name: Scaffolding
+version: 1.0.0
+category: instruction
+description: >
+  Give temporary support and remove it as the learner succeeds at the current objective.
+learning_objectives:
+  - supported_performance
+  - independent_performance
+suitable_contexts:
+  - new_procedure
+  - partial_understanding
+learner_conditions:
+  - support_can_be_removed_without_changing_the_objective
+avoid_or_modify_conditions:
+  - support_is_still_required_for_the_learner_to_start
+implementation_steps:
+  - Start from an explanation or worked example.
+  - Work one problem with the learner.
+  - Remove one kind of hint at a time.
+  - Ask for an independent solution of the same objective.
+assessment_signals:
+  - success_with_less_support
+  - independent_solution
+limitations:
+  - Support that never fades is not scaffolding.
+  - The paper by Wood, Bruner, and Ross is a bibliographic pointer, not a stored tutoring script.
+sources:
+  - wood_1976
+review_status: pending_human_review

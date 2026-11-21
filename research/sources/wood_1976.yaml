@@ -1,0 +1,28 @@
+source_id: wood_1976
+title: The Role of Tutoring in Problem Solving
+authors:
+  - David Wood
+  - Jerome S. Bruner
+  - Gail Ross
+year: 1976
+publication: Journal of Child Psychology and Psychiatry
+doi: 10.1111/j.1469-7610.1976.tb00381.x
+url: https://doi.org/10.1111/j.1469-7610.1976.tb00381.x
+access_type: publisher
+license: Crossref lists Wiley terms and conditions. No Creative Commons license was listed.
+retrieved_date: 2026-11-21
+relevant_sections:
+  - Tutoring
+  - Contingent support
+evidence_notes: >
+  Crossref confirmed the 1976 article by Wood, Bruner, and Ross in the Journal of
+  Child Psychology and Psychiatry, volume 17, issue 2, pages 89-100. It is catalogued
+  as the bibliographic source for temporary tutoring support. The article is not stored.
+limitations:
+  - Publisher access applies.
+  - The registry does not treat this paper as a script for software tutoring.
+review_status: pending_human_review
+metadata_verification:
+  checked_on: 2026-11-21
+  method: crossref
+  identifier: 10.1111/j.1469-7610.1976.tb00381.x

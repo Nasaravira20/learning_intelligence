@@ -1245,16 +1245,16 @@ Start with curated references, not unrestricted scraping.
 
 ## Acceptance Tests
 
-- [ ] Every P0 strategy has a stable ID.
-- [ ] Every strategy has a version.
-- [ ] Required fields are present.
-- [ ] Source references resolve to valid registry entries.
-- [ ] Bibliographic metadata is verified.
-- [ ] Access and licensing information is recorded.
-- [ ] Unreviewed strategies cannot be selected in production.
-- [ ] Invalid entries fail validation.
-- [ ] No unauthorized copyrighted content is stored.
-- [ ] LLM-generated research summaries receive human review.
+- [x] Every P0 strategy has a stable ID.
+- [x] Every strategy has a version.
+- [x] Required fields are present.
+- [x] Source references resolve to valid registry entries.
+- [x] Bibliographic metadata is verified.
+- [x] Access and licensing information is recorded.
+- [x] Unreviewed strategies cannot be selected in production.
+- [x] Invalid entries fail validation.
+- [x] No unauthorized copyrighted content is stored.
+- [x] LLM-generated research summaries receive human review.
 
 ## Phase Gate
 

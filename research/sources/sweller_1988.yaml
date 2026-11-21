@@ -1,0 +1,25 @@
+source_id: sweller_1988
+title: "Cognitive Load During Problem Solving: Effects on Learning"
+authors:
+  - John Sweller
+year: 1988
+publication: Cognitive Science
+doi: 10.1207/s15516709cog1202_4
+url: https://doi.org/10.1207/s15516709cog1202_4
+access_type: publisher
+license: Crossref lists Wiley terms and conditions. No Creative Commons license was listed.
+retrieved_date: 2026-11-21
+relevant_sections:
+  - Cognitive load during problem solving
+evidence_notes: >
+  Crossref confirmed Sweller's 1988 article in Cognitive Science, volume 12, issue 2,
+  pages 257-285. It is catalogued for the claim that problem solving can impose a heavy
+  cognitive load. It is not stored, and it is not treated as a worked-example manual.
+limitations:
+  - Publisher access applies.
+  - Worked-example steps in the strategy catalogue are an instructional hypothesis linked to this paper's topic, not a quotation from it.
+review_status: pending_human_review
+metadata_verification:
+  checked_on: 2026-11-21
+  method: crossref
+  identifier: 10.1207/s15516709cog1202_4

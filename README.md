@@ -125,3 +125,7 @@ Local diagnosis uses `AI_PROVIDER=mock` and does not call Gemini. Set `AI_PROVID
 After a diagnosis is complete, build a learning plan from the same session. The plan orders every objective by its prerequisites, gives each step that objective's completion criteria, and starts at the first step that does not yet have observed diagnostic evidence. A partial or uncertain answer does not skip a concept. Adding a prerequisite that would create a cycle is rejected. A later diagnostic follow-up can revise the plan; the previous revision stays stored and the active plan is the one shown on `/learn`. The session status becomes plan ready. Teaching does not start in this phase.
 
 The sequence is computed in the API. Routine tests keep `AI_PROVIDER=mock` and do not call Gemini.
+
+## Pedagogy registry
+
+`research/strategies/` and `research/sources/` hold the P0 catalogue. Bibliographic metadata was checked on 2026-11-21. The notes are original and pending human review, so none of the strategies can be selected in production. `GET /api/pedagogy/registry` returns the catalogue and an empty `production_selectable_strategy_ids` list. Ingestion and the review checklist are in `docs/RESEARCH_INGESTION.md` and `docs/HUMAN_REVIEW_CHECKLIST.md`. This phase does not choose a strategy and does not start teaching.

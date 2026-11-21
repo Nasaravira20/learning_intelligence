@@ -1,0 +1,33 @@
+strategy_id: retrieval_practice
+name: Retrieval Practice
+version: 1.0.0
+category: memory_and_retrieval
+description: >
+  Ask the learner to recall something already taught before showing the answer,
+  then give corrective feedback.
+learning_objectives:
+  - recall
+  - retention
+suitable_contexts:
+  - previously_taught_concepts
+  - revision
+learner_conditions:
+  - initial_instruction_has_been_provided
+avoid_or_modify_conditions:
+  - learner_has_never_been_taught_the_concept
+implementation_steps:
+  - Ask a focused question about material the learner has already studied.
+  - Allow an independent attempt before revealing the answer.
+  - Compare the attempt with the expected idea.
+  - Give corrective feedback when the attempt is wrong or incomplete.
+assessment_signals:
+  - independent_recall
+  - delayed_recall
+limitations:
+  - Retrieval practice does not replace the first explanation of a concept.
+  - A wrong retrieval needs correction rather than another unsupported guess.
+sources:
+  - weinstein_2018
+  - dunlosky_2013
+  - carpenter_2022
+review_status: pending_human_review

@@ -1,0 +1,31 @@
+strategy_id: small_step_instruction
+name: Small-Step Instruction
+version: 1.0.0
+category: instruction
+description: >
+  Teach one required idea, check it, and only then add an idea that depends on it.
+learning_objectives:
+  - foundational_understanding
+  - prerequisite_order
+suitable_contexts:
+  - complex_objective
+  - missing_prerequisite
+learner_conditions:
+  - the_objective_can_be_split_into_ordered_parts
+avoid_or_modify_conditions:
+  - a_later_idea_is_introduced_while_an_earlier_one_is_still_missing
+implementation_steps:
+  - Split the objective into the smallest ideas that still have a check.
+  - Teach one idea.
+  - Check that idea before teaching the next dependent idea.
+  - Combine the ideas only after the earlier checks have evidence.
+assessment_signals:
+  - check_passed_before_the_next_idea
+  - dependent_idea_withheld
+limitations:
+  - Smaller steps do not by themselves prove mastery.
+  - A missing prerequisite still changes the starting point.
+sources:
+  - rosenshine_2012
+  - sweller_1988
+review_status: pending_human_review

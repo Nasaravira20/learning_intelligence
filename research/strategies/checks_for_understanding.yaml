@@ -1,0 +1,30 @@
+strategy_id: checks_for_understanding
+name: Checks for Understanding
+version: 1.0.0
+category: assessment
+description: >
+  Ask a short question during instruction and use the answer to decide whether to continue.
+learning_objectives:
+  - reveal_confusion
+  - decide_the_next_step
+suitable_contexts:
+  - during_instruction
+  - before_a_dependent_idea
+learner_conditions:
+  - there_is_a_specific_idea_to_check
+avoid_or_modify_conditions:
+  - the_question_can_be_answered_without_the_target_idea
+implementation_steps:
+  - Pause after one important idea.
+  - Ask for a prediction or an explanation, not only a definition.
+  - Decide from the answer whether to reteach, give an example, or continue.
+  - Record the answer as evidence for that idea.
+assessment_signals:
+  - explanation_of_the_current_idea
+  - decision_changed_by_the_answer
+limitations:
+  - A correct short answer with weak reasoning is only partial evidence.
+  - Checks do not replace a later assessment of the whole objective.
+sources:
+  - rosenshine_2012
+review_status: pending_human_review

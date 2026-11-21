@@ -1,0 +1,30 @@
+strategy_id: formative_feedback
+name: Formative Feedback
+version: 1.0.0
+category: assessment
+description: >
+  Tell the learner what was shown, what was missing, why it matters, and what to try next.
+learning_objectives:
+  - improve_the_next_attempt
+  - locate_the_gap
+suitable_contexts:
+  - after_an_attempt
+  - partial_understanding
+learner_conditions:
+  - the_learner_has_made_an_attempt
+avoid_or_modify_conditions:
+  - feedback_would_only_praise_or_reject_without_a_next_step
+implementation_steps:
+  - Name the part of the attempt that matches the objective.
+  - Name the part that is missing or contradicted.
+  - Say why that part matters for the objective.
+  - Give one next action the learner can try.
+assessment_signals:
+  - next_attempt_addresses_the_named_gap
+  - feedback_names_a_specific_gap
+limitations:
+  - Generic praise is not formative feedback.
+  - Feedback does not count as observed mastery.
+sources:
+  - black_wiliam_1998
+review_status: pending_human_review
