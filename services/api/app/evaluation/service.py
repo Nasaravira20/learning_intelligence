@@ -138,6 +138,10 @@ def submit_response(
     attempt.updated_at = utcnow()
     _record_learner_evidence(db, learning_session, objective, attempt, judgment, decision_name)
     apply_evaluation_decision(db, learning_session, decision_name)
+    if decision_name == "mastered":
+        from app.retention.schedule import schedule_after_mastery
+
+        schedule_after_mastery(db, learning_session, attempt.objective_code)
     log_event(
         logger,
         logging.INFO,
@@ -153,9 +157,13 @@ def start_remediation(db: Session, learning_session: LearningSession, provider: 
     if learning_session.status != "REMEDIATION":
         raise ConflictError("remediation_not_ready", "Remediation follows a partial or missed check.")
     attempt = _latest(db, learning_session.id)
-    if attempt is None or attempt.mastery_record_id is None:
+    if attempt is None:
         raise ConflictError("remediation_not_ready", "Remediation follows a partial or missed check.")
-    record = db.get(MasteryRecord, attempt.mastery_record_id)
+    record = db.scalar(
+        select(MasteryRecord)
+        .where(MasteryRecord.session_id == learning_session.id)
+        .order_by(MasteryRecord.created_at.desc(), MasteryRecord.id.desc())
+    )
     if record is None or record.decision != "remediation" or not record.remediation_strategy_id:
         raise ConflictError("remediation_unavailable", "No different registered strategy is available.")
     objective = _objective(db, learning_session, attempt.objective_code)

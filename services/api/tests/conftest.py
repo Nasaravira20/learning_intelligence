@@ -86,7 +86,7 @@ def client(migrated_database: str):
                 "diagnostic_questions, diagnostic_responses, topic_concepts, "
                 "learning_plans, learning_plan_steps, pedagogy_selections, "
                 "teaching_attempts, teaching_hints, teaching_activities, teaching_lessons, "
-                "evaluation_attempts, mastery_records "
+                "evaluation_attempts, mastery_records, revision_reviews "
                 "RESTART IDENTITY CASCADE"
             )
         )

@@ -22,6 +22,13 @@ class DiagnosticMockProvider:
             payload = _evaluation_question(request.prompt)
         elif "Task: evaluation_judgment" in request.prompt:
             payload = _evaluation_judgment(request.prompt)
+        elif "Task: retention_question" in request.prompt:
+            objective = _labeled(request.prompt, "OBJECTIVE ")
+            concept = _labeled(request.prompt, "CONCEPT ")
+            payload = {
+                "objective_code": objective,
+                "prompt": f"Recall {objective} for {concept} before any answer is shown.",
+            }
         else:
             raise ProviderError("unsupported_operation", False)
         return GenerationResult(

@@ -1488,15 +1488,15 @@ Ensure the system measures whether learners remember and can apply concepts over
 
 ## Acceptance Tests
 
-- [ ] Revision dates are calculated correctly.
-- [ ] Due revisions are identifiable.
-- [ ] Delayed assessments test previously learned objectives.
-- [ ] Revision outcomes update mastery records.
-- [ ] Failed revision triggers appropriate remediation.
-- [ ] Missed revisions are handled.
-- [ ] Timezone boundaries are tested.
-- [ ] Revision history persists.
-- [ ] Learners can resume revision sessions.
+- [x] Revision dates are calculated correctly.
+- [x] Due revisions are identifiable.
+- [x] Delayed assessments test previously learned objectives.
+- [x] Revision outcomes update mastery records.
+- [x] Failed revision triggers appropriate remediation.
+- [x] Missed revisions are handled.
+- [x] Timezone boundaries are tested.
+- [x] Revision history persists.
+- [x] Learners can resume revision sessions.
 
 ## Phase Gate
 

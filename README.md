@@ -2,7 +2,7 @@
 
 Phase 0 is a local learning-session shell. The browser talks to Next.js, Next.js proxies to FastAPI, and FastAPI stores learners, topics, and sessions in PostgreSQL.
 
-A session starts in `TOPIC_SELECTED`. Diagnosis moves it to `DIAGNOSING`, a learning plan moves it to `PLAN_READY`, and a lesson moves it to `TEACHING`. A check can move it to `EVALUATING`, then to `REMEDIATION`, `MASTERED`, or `NEEDS_REVIEW`.
+A session starts in `TOPIC_SELECTED`. Diagnosis moves it to `DIAGNOSING`, a learning plan moves it to `PLAN_READY`, and a lesson moves it to `TEACHING`. A check can move it to `EVALUATING`, then to `REMEDIATION`, `MASTERED`, or `NEEDS_REVIEW`. A due review moves a mastered session to `RETENTION_ASSESSMENT`, and a successful recall moves it to `MASTERY_UPDATED`.
 
 A signed-in learner has a private record: profile, goals, preferences, topic knowledge, misconceptions, assessment history, and learning activities. Observed knowledge was demonstrated. Inferred knowledge is an estimate or a self-report, and a correction does not turn it into an observation. Session history is `GET /api/sessions/{session_id}/history`.
 
@@ -138,7 +138,11 @@ Local teaching uses `AI_PROVIDER=mock` and does not call Gemini.
 
 ## Evaluation
 
-Check this objective asks for the current objective and a reason. The rubric is fixed in code. A correct answer with weak reasoning keeps full credit and asks for another check. It does not mark the objective mastered. A partial answer records partial credit, explains the missing part, and can teach again with a different registered strategy. An uncertain result stays in needs review. Mastery requires a correct answer, sound reasoning, and solid understanding, and that evidence is stored as observed. The development mock does not score real understanding. No live Gemini call is made by the routine tests.
+Check this objective asks for the current objective and a reason. The rubric is fixed in code. A correct answer with weak reasoning keeps full credit and asks for another check. It does not mark the objective mastered. A partial answer records partial credit, explains the missing part, and can teach again with a different registered strategy. An uncertain result stays in needs review. Mastery requires a correct answer, sound reasoning, and solid understanding, and that evidence is stored as observed. Mastery also schedules a later review. The development mock does not score real understanding. No live Gemini call is made by the routine tests.
+
+## Retention
+
+A mastered objective gets a review on a later local calendar day. The default gaps are 1, 3, 7, 16, and 35 days, in `RETENTION_TIMEZONE` (UTC unless you set another IANA name). The date is the learner's local date, so a review does not become due at UTC midnight when that is still the previous evening in another zone. Upcoming reviews are listed on `/learn`. A due or missed review asks for the same objective without showing an answer. Recalling it records another observed mastery and moves the gap forward. A missed date that is then recalled starts the gaps again. A failed recall returns the session to remediation with a different strategy and a one-day next gap. The schedule is code. Routine tests do not call Gemini.
 
 ## Pedagogy registry
 

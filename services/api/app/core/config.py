@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     gemini_model_candidates: str = Field(default="", alias="GEMINI_MODEL_CANDIDATES")
     gemini_verify_limit: int = Field(default=3, alias="GEMINI_VERIFY_LIMIT")
     ai_provider: str = Field(default="mock", alias="AI_PROVIDER")
+    retention_intervals_days: str = Field(default="1,3,7,16,35", alias="RETENTION_INTERVALS_DAYS")
+    retention_timezone: str = Field(default="UTC", alias="RETENTION_TIMEZONE")
     app_name: str = "ai-teacher-api"
 
     model_config = SettingsConfigDict(
@@ -70,6 +72,26 @@ class Settings(BaseSettings):
         cleaned = value.strip().lower()
         if cleaned not in {"mock", "gemini"}:
             raise ValueError("AI_PROVIDER must be mock or gemini.")
+        return cleaned
+
+    @field_validator("retention_intervals_days")
+    @classmethod
+    def retention_days(cls, value: str) -> str:
+        from app.retention.policy import parse_intervals
+
+        parse_intervals(value)
+        return value
+
+    @field_validator("retention_timezone")
+    @classmethod
+    def retention_zone(cls, value: str) -> str:
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+        cleaned = value.strip()
+        try:
+            ZoneInfo(cleaned)
+        except ZoneInfoNotFoundError as exc:
+            raise ValueError("RETENTION_TIMEZONE must be an IANA timezone name.") from exc
         return cleaned
 
     @field_validator("gemini_max_retries")

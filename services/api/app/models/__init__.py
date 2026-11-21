@@ -17,6 +17,7 @@ from app.models.entities import (
 from app.models.pedagogy import PedagogySelection
 from app.models.teaching import TeachingActivity, TeachingAttempt, TeachingHint, TeachingLesson
 from app.models.evaluation import EvaluationAttempt, MasteryRecord
+from app.models.retention import RevisionReview
 from app.models.planning import LearningPlan, LearningPlanStep, TopicConcept
 from app.models.learner_records import (
     AssessmentRecord,
@@ -47,6 +48,7 @@ __all__ = [
     "TeachingLesson",
     "EvaluationAttempt",
     "MasteryRecord",
+    "RevisionReview",
     "TopicConcept",
     "LearnerProfile",
     "LearningActivity",

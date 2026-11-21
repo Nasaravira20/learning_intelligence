@@ -22,6 +22,7 @@ import { slugify } from "@/lib/slug";
 import { DiagnosticPanel } from "@/components/DiagnosticPanel";
 import { PlanPanel } from "@/components/PlanPanel";
 import { EvaluationPanel } from "@/components/EvaluationPanel";
+import { RetentionPanel } from "@/components/RetentionPanel";
 import { TeachingPanel } from "@/components/TeachingPanel";
 import { LearnerDashboard } from "@/components/LearnerDashboard";
 
@@ -56,6 +57,12 @@ function sessionStatusLabel(status: string): string {
   }
   if (status === "NEEDS_REVIEW") {
     return "Needs review";
+  }
+  if (status === "RETENTION_ASSESSMENT") {
+    return "Review";
+  }
+  if (status === "MASTERY_UPDATED") {
+    return "Mastery updated";
   }
   if (status === "TOPIC_SELECTED") {
     return "Topic selected";
@@ -352,6 +359,8 @@ export function TeacherShell() {
           Start session
         </button>
       </form>
+
+      <RetentionPanel sessions={sessions} refreshKey={refreshKey} onSession={replaceSession} />
 
       <section className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
         <h2 className="text-lg font-semibold">Saved sessions</h2>

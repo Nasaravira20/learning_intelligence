@@ -67,6 +67,7 @@ def test_migrations_create_expected_tables(client) -> None:
         "teaching_attempts",
         "evaluation_attempts",
         "mastery_records",
+        "revision_reviews",
     } <= names
 
 

@@ -20,7 +20,7 @@ Phase 0 acceptance: frontend and backend start, they communicate, migrations wor
 
 Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 is approved.
 
-Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is approved. The product owner approved starting Phase 6 on 2026-11-21. Phase 6 is approved. The product owner approved starting Phase 7 on 2026-11-21. Phase 7 is approved. The product owner approved starting Phase 8 on 2026-11-21. Phase 8 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 9 until the product owner approves the Phase 8 report.
+Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is approved. The product owner approved starting Phase 6 on 2026-11-21. Phase 6 is approved. The product owner approved starting Phase 7 on 2026-11-21. Phase 7 is approved. The product owner approved starting Phase 8 on 2026-11-21. Phase 8 is approved. The product owner approved starting Phase 9 on 2026-11-21. Phase 9 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 10 until the product owner approves the Phase 9 report.
 
 Later acceptance criteria stay in `AI_TEACHER_MVP_ROADMAP.md` sections 12 and 18. Do not mark a criterion done unless it was executed.
 
@@ -925,7 +925,100 @@ Name: Evaluation and Adaptation Engine
 - Choose Teach a different way. The session returns to Teaching with a different strategy. Reload the page. The lesson remains.
 
 11. Remaining Issues
-- A person still has to compare evaluation quality with human raters. Do not start Phase 9 until this report is approved.
+- A person still has to compare evaluation quality with human raters. The product owner approved starting Phase 9 on 2026-11-21.
+
+PRODUCT OWNER DECISION:
+[x] Approve
+[ ] Request changes
+```
+
+# Phase 9 completion report
+
+```text
+PHASE COMPLETION REPORT
+
+Phase: 9
+Name: Retention and Learning Progress
+
+1. Implementation Summary
+- Mastery schedules a review on a later local calendar day. The default gaps are 1, 3, 7, 16, and 35 days. The date uses RETENTION_TIMEZONE, so UTC midnight is not treated as the learner's midnight.
+- A due or missed review asks for the previously mastered objective and does not include the answer. A successful recall writes another observed mastery record and lengthens the gap. A missed date that is then recalled starts the gaps again.
+- A failed recall writes a remediation mastery record, returns the session to remediation with a different registered strategy, and schedules the short gap again. Resume keeps an open review.
+- No live Gemini call was made. The schedule is code.
+
+2. Deliverables
+- Retention scheduler
+- Revision records
+- Delayed assessment workflow
+- Mastery history
+- Revision dashboard
+- Integration tests
+
+3. Files Created
+- services/api/app/retention/
+- services/api/app/models/retention.py
+- services/api/app/schemas/retention.py
+- services/api/app/api/retention.py
+- services/api/alembic/versions/0010_retention.py
+- services/api/tests/test_retention.py
+- services/api/tests/test_retention_policy.py
+- apps/web/src/components/RetentionPanel.tsx
+
+4. Files Modified
+- services/api/app/core/config.py
+- services/api/app/ai/providers/diagnostic_mock.py
+- services/api/app/evaluation/service.py
+- services/api/app/services/sessions.py
+- services/api/app/models/entities.py
+- services/api/app/models/__init__.py
+- services/api/alembic/env.py
+- services/api/app/main.py
+- services/api/tests/conftest.py
+- services/api/tests/test_api.py
+- apps/web/src/lib/api.ts
+- apps/web/src/components/EvaluationPanel.tsx
+- apps/web/src/components/TeacherShell.tsx
+- .env.example
+- README.md
+- AI_TEACHER_MVP_ROADMAP.md
+- .cursor/skills/implement-roadmap-phase/phases.md
+
+5. Tests Executed
+- Exact commands:
+- docker compose run --rm --build api python -m pytest
+  (working directory: repository root)
+- npm test
+  (working directory: apps/web)
+- npx tsc --noEmit
+  (working directory: apps/web)
+
+6. Test Results
+- API: 108 passed, 0 failed, 0 skipped, in 100.39s.
+- Web: 16 passed, 0 failed, 0 skipped, 5 files. npx tsc --noEmit exited 0.
+
+7. Acceptance Criteria
+- Passed: Revision dates are calculated correctly. Due revisions are identifiable. Delayed assessments test previously learned objectives. Revision outcomes update mastery records. Failed revision triggers appropriate remediation. Missed revisions are handled. Timezone boundaries are tested. Revision history persists. Learners can resume revision sessions.
+- Failed: none
+- Not implemented: none
+
+8. Known Limitations
+- RETENTION_DUE in the roadmap diagram is the review timing. The session stays MASTERED until the learner starts the review, then RETENTION_ASSESSMENT. A successful recall is MASTERY_UPDATED.
+- The interval list is configurable and is not a claim that one schedule works for every learner.
+- The development mock does not score real recall. This phase made no live Gemini calls. Cost is USD 0.
+
+9. API Usage
+- Model: none
+- Requests: 0
+- Tokens: 0
+- Estimated cost: USD 0
+
+10. Demo Instructions
+- From the repository root: docker compose up --build
+- Sign in, open /learn, and master an objective. Upcoming reviews shows the next local date.
+- When that date arrives, Start review asks for the same objective. A partial answer returns the session to Remediation. Resume keeps an open review.
+
+11. Remaining Issues
+- None that block the retention gate. Do not start Phase 10 until this report is approved.
 
 PRODUCT OWNER DECISION:
 [ ] Approve

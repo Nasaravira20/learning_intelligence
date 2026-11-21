@@ -724,3 +724,36 @@ export function submitEvaluation(
 export function startRemediation(sessionId: string): Promise<EvaluationAttempt> {
   return apiRequest<EvaluationAttempt>(`/api/sessions/${sessionId}/evaluation/remediation`, { method: "POST" });
 }
+
+export type RevisionReview = {
+  id: string;
+  session_id: string;
+  objective_code: string;
+  interval_index: number;
+  due_on: string;
+  timezone: string;
+  status: string;
+  timing: string;
+  was_missed: boolean;
+  outcome: string | null;
+  session_status: string;
+  prompt: string | null;
+  rubric: string[];
+  created_at: string;
+  updated_at: string;
+};
+
+export function listReviews(): Promise<RevisionReview[]> {
+  return apiRequest<RevisionReview[]>("/api/retention");
+}
+
+export function startReview(sessionId: string): Promise<RevisionReview> {
+  return apiRequest<RevisionReview>(`/api/sessions/${sessionId}/retention`, { method: "POST" });
+}
+
+export function submitReview(sessionId: string, answerText: string, reasoningText: string): Promise<RevisionReview> {
+  return apiRequest<RevisionReview>(`/api/sessions/${sessionId}/retention/response`, {
+    method: "POST",
+    body: JSON.stringify({ answer_text: answerText, reasoning_text: reasoningText }),
+  });
+}

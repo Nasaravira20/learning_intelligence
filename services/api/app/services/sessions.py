@@ -139,6 +139,24 @@ def apply_evaluation_decision(session: Session, item: LearningSession, decision:
     return _set_status(session, item, target)
 
 
+def enter_retention(session: Session, item: LearningSession) -> LearningSession:
+    if item.status == "RETENTION_ASSESSMENT":
+        return item
+    if item.status not in {"MASTERED", "MASTERY_UPDATED"}:
+        raise AppError("invalid_transition", "A review starts after the objective is mastered.", 409)
+    return _set_status(session, item, "RETENTION_ASSESSMENT")
+
+
+def apply_retention_outcome(session: Session, item: LearningSession, outcome: str) -> LearningSession:
+    if item.status != "RETENTION_ASSESSMENT":
+        raise AppError("invalid_transition", "This session is not in a review.", 409)
+    if outcome == "recalled":
+        return _set_status(session, item, "MASTERY_UPDATED")
+    if outcome == "failed":
+        return _set_status(session, item, "REMEDIATION")
+    return item
+
+
 def resume_teaching(session: Session, item: LearningSession) -> LearningSession:
     if item.status == "TEACHING":
         return item

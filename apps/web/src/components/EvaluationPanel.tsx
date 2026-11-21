@@ -156,7 +156,7 @@ export function EvaluationPanel({
             <p className="text-stone-700">Evidence from the answer: {evaluation.misconception_evidence}</p>
           ) : null}
           {evaluation.decision === "mastered" ? (
-            <p className="text-stone-700">Observed evidence is recorded. Retention is not scheduled.</p>
+            <p className="text-stone-700">Observed evidence is recorded. A later review is on the schedule.</p>
           ) : null}
           {evaluation.decision === "needs_review" ? (
             <p className="text-stone-700">This result is not mastery.</p>
