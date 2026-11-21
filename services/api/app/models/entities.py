@@ -94,7 +94,10 @@ class LearningTopic(Base):
 class LearningSession(Base):
     __tablename__ = "learning_sessions"
     __table_args__ = (
-        CheckConstraint("status = 'TOPIC_SELECTED'", name="ck_learning_sessions_status"),
+        CheckConstraint(
+            "status IN ('TOPIC_SELECTED', 'DIAGNOSING')",
+            name="ck_learning_sessions_status",
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)

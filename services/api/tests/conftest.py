@@ -81,7 +81,9 @@ def client(migrated_database: str):
             text(
                 "TRUNCATE auth_sessions, learning_sessions, learning_topics, learner_profiles, users, "
                 "ai_usage_records, ai_model_checks, learning_goals, learning_preferences, "
-                "learner_knowledge, misconception_records, assessment_records, learning_activities "
+                "learner_knowledge, misconception_records, assessment_records, learning_activities, "
+                "learning_objectives, objective_prerequisites, diagnostic_attempts, "
+                "diagnostic_questions, diagnostic_responses "
                 "RESTART IDENTITY CASCADE"
             )
         )

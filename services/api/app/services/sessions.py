@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from app.core.errors import NotFoundError
+from app.core.errors import AppError, NotFoundError
 from app.core.logging import log_event
 from app.core.time import utcnow
 from app.models import LearningSession
@@ -74,6 +74,24 @@ def list_sessions(session: Session, learner_id: UUID | None = None) -> list[Lear
     if learner_id is not None:
         statement = statement.where(LearningSession.learner_id == learner_id)
     return list(session.scalars(statement).unique().all())
+
+
+def enter_diagnosis(session: Session, item: LearningSession) -> LearningSession:
+    if item.status == "DIAGNOSING":
+        return item
+    if item.status != "TOPIC_SELECTED":
+        raise AppError("invalid_transition", "This session cannot start a diagnosis.", 409)
+    item.status = "DIAGNOSING"
+    item.updated_at = utcnow()
+    session.flush()
+    log_event(
+        logger,
+        logging.INFO,
+        "session_status_changed",
+        session_id=item.id,
+        status=item.status,
+    )
+    return item
 
 
 def resume_session(session: Session, session_id: UUID) -> LearningSession:

@@ -19,6 +19,7 @@ import {
   UiError,
 } from "@/lib/api";
 import { slugify } from "@/lib/slug";
+import { DiagnosticPanel } from "@/components/DiagnosticPanel";
 import { LearnerDashboard } from "@/components/LearnerDashboard";
 
 function ErrorBanner({ error }: { error: UiError }) {
@@ -29,6 +30,16 @@ function ErrorBanner({ error }: { error: UiError }) {
       {error.requestId ? <p className="mt-1 font-mono text-xs text-rose-800">Request ID: {error.requestId}</p> : null}
     </div>
   );
+}
+
+function sessionStatusLabel(status: string): string {
+  if (status === "DIAGNOSING") {
+    return "Diagnosing";
+  }
+  if (status === "TOPIC_SELECTED") {
+    return "Topic selected";
+  }
+  return status;
 }
 
 function formatWhen(value: string | null): string {
@@ -320,23 +331,31 @@ export function TeacherShell() {
         {sessions.length === 0 ? <p className="mt-3 text-sm text-stone-600">No sessions yet.</p> : null}
         <ul className="mt-3 divide-y divide-stone-200">
           {sessions.map((session) => (
-            <li key={session.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-              <div>
-                <p className="font-medium">
-                  {session.learner_name} · {session.topic_title}
-                </p>
-                <p className="text-sm text-stone-600">Status: Topic selected</p>
-                <p className="text-sm text-stone-600">Resumed: {formatWhen(session.resumed_at)}</p>
+            <li key={session.id} className="grid gap-3 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="font-medium">
+                    {session.learner_name} · {session.topic_title}
+                  </p>
+                  <p className="text-sm text-stone-600">Status: {sessionStatusLabel(session.status)}</p>
+                  <p className="text-sm text-stone-600">Resumed: {formatWhen(session.resumed_at)}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onResume(session.id)}
+                  disabled={pending !== null}
+                  aria-label={`Resume ${session.topic_title}`}
+                  className="rounded border border-stone-400 px-3 py-2 text-sm disabled:opacity-50"
+                >
+                  Resume
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => onResume(session.id)}
-                disabled={pending !== null}
-                aria-label={`Resume ${session.topic_title}`}
-                className="rounded border border-stone-400 px-3 py-2 text-sm disabled:opacity-50"
-              >
-                Resume
-              </button>
+              <DiagnosticPanel
+                session={session}
+                onSession={(updated) =>
+                  setSessions((current) => current.map((item) => (item.id === updated.id ? updated : item)))
+                }
+              />
             </li>
           ))}
         </ul>

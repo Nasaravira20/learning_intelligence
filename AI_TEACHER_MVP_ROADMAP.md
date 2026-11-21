@@ -1157,15 +1157,15 @@ Determine what the learner understands before teaching.
 
 ## Acceptance Tests
 
-- [ ] Diagnostic questions align with learning objectives.
-- [ ] Beginner learners can be distinguished from partially knowledgeable learners.
-- [ ] Answers and reasoning are evaluated separately.
-- [ ] Partial understanding is recognized.
-- [ ] Misconception hypotheses include supporting evidence.
-- [ ] Uncertain conclusions remain uncertain.
-- [ ] Invalid model output is rejected.
-- [ ] Diagnostic results persist.
-- [ ] Human-reviewed benchmark cases pass agreed thresholds.
+- [x] Diagnostic questions align with learning objectives.
+- [x] Beginner learners can be distinguished from partially knowledgeable learners.
+- [x] Answers and reasoning are evaluated separately.
+- [x] Partial understanding is recognized.
+- [x] Misconception hypotheses include supporting evidence.
+- [x] Uncertain conclusions remain uncertain.
+- [x] Invalid model output is rejected.
+- [x] Diagnostic results persist.
+- [x] Human-reviewed benchmark cases pass agreed thresholds.
 
 ## Phase Gate
 

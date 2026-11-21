@@ -430,3 +430,98 @@ export function recordActivity(
 export function getSessionHistory(sessionId: string): Promise<SessionHistory> {
   return apiRequest<SessionHistory>(`/api/sessions/${sessionId}/history`);
 }
+
+export type LearningObjectiveRecord = {
+  id: string;
+  topic_id: string;
+  code: string;
+  statement: string;
+  concept: string;
+  position: number;
+  prerequisite_codes: string[];
+  created_at: string;
+};
+
+export type DiagnosisQuestion = {
+  id: string;
+  objective_code: string;
+  objective_statement: string;
+  concept: string;
+  format: "short_answer" | "multiple_choice" | "reasoning";
+  prompt: string;
+  choices: string[] | null;
+  position: number;
+};
+
+export type DiagnosisJudgment = {
+  question_id: string;
+  objective_code: string;
+  answer_text: string;
+  reasoning_text: string;
+  answer_verdict: "correct" | "partial" | "incorrect" | "unanswered";
+  reasoning_verdict: "sound" | "partial" | "weak" | "absent" | "uncertain";
+  understanding: "none" | "partial" | "solid" | "uncertain";
+  confidence: number;
+  needs_review: boolean;
+  confirmed: boolean;
+};
+
+export type DiagnosisMisconception = {
+  id: string;
+  concept: string;
+  description: string;
+  evidence: string | null;
+  confidence: number;
+  confirmed: boolean;
+};
+
+export type DiagnosisReport = {
+  id: string;
+  session_id: string;
+  topic_id: string;
+  status: "in_progress" | "completed";
+  session_status: string;
+  starting_point: "beginner" | "partial" | "uncertain" | null;
+  confidence: number | null;
+  summary: string | null;
+  first_unmet_objective_code: string | null;
+  questions: DiagnosisQuestion[];
+  judgments: DiagnosisJudgment[];
+  misconceptions: DiagnosisMisconception[];
+};
+
+export function createLearningObjective(
+  topicId: string,
+  code: string,
+  statement: string,
+  concept: string,
+  prerequisiteCodes: string[],
+): Promise<LearningObjectiveRecord> {
+  return apiRequest<LearningObjectiveRecord>(`/api/topics/${topicId}/objectives`, {
+    method: "POST",
+    body: JSON.stringify({
+      code,
+      statement,
+      concept,
+      prerequisite_codes: prerequisiteCodes,
+    }),
+  });
+}
+
+export function startDiagnosis(sessionId: string): Promise<DiagnosisReport> {
+  return apiRequest<DiagnosisReport>(`/api/sessions/${sessionId}/diagnosis`, { method: "POST" });
+}
+
+export function getDiagnosis(sessionId: string): Promise<DiagnosisReport> {
+  return apiRequest<DiagnosisReport>(`/api/sessions/${sessionId}/diagnosis`);
+}
+
+export function submitDiagnosis(
+  sessionId: string,
+  responses: { question_id: string; answer_text: string; reasoning_text: string }[],
+): Promise<DiagnosisReport> {
+  return apiRequest<DiagnosisReport>(`/api/sessions/${sessionId}/diagnosis/responses`, {
+    method: "POST",
+    body: JSON.stringify({ responses }),
+  });
+}

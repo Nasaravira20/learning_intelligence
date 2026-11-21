@@ -1,6 +1,8 @@
 from fastapi import Depends, Request, Response
 from sqlalchemy.orm import Session
 
+from app.ai.providers.base import ModelProvider
+from app.ai.providers.diagnostic_mock import DiagnosticMockProvider
 from app.core.config import get_settings
 from app.core.errors import AppError
 from app.core.security import COOKIE_NAME, SESSION_DAYS
@@ -42,6 +44,17 @@ def optional_user(request: Request, db: Session = Depends(get_db)) -> User | Non
     if not token:
         return None
     return auth_service.account_for_token(db, token)
+
+
+def get_model_provider() -> ModelProvider:
+    settings = get_settings()
+    if settings.ai_provider == "gemini":
+        if not settings.gemini_api_key:
+            raise AppError("model_not_verified", "No Gemini credential is configured.", 503)
+        from app.ai.providers.gemini import GeminiProvider
+
+        return GeminiProvider(settings.gemini_api_key, settings.gemini_timeout_seconds)
+    return DiagnosticMockProvider()
 
 
 def require_user(request: Request, db: Session = Depends(get_db)) -> User:

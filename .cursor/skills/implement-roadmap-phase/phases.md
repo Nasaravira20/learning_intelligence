@@ -20,7 +20,7 @@ Phase 0 acceptance: frontend and backend start, they communicate, migrations wor
 
 Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 is approved.
 
-Phase 2 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 3 until the product owner approves this report.
+Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 4 until the product owner approves the Phase 3 report.
 
 Later acceptance criteria stay in `AI_TEACHER_MVP_ROADMAP.md` sections 12 and 18. Do not mark a criterion done unless it was executed.
 
@@ -331,7 +331,118 @@ Name: Learner intelligence
 - Start a session and use History for that topic. Reload the page. The record is read back from PostgreSQL.
 
 11. Remaining Issues
-- None that block the Phase 2 gate. Do not start Phase 3 until this report is approved.
+- None that block the Phase 2 gate. The product owner approved this report by starting Phase 3.
+
+PRODUCT OWNER DECISION:
+[x] Approve
+[ ] Request changes
+```
+
+# Phase 3 completion report
+
+```text
+PHASE COMPLETION REPORT
+
+Phase: 3
+Name: Diagnostic Engine
+
+1. Implementation Summary
+- A signed-in learner can define learning objectives and prerequisites, then move a topic session from TOPIC_SELECTED to DIAGNOSING.
+- Question wording and judgments come from the model provider and are parsed with typed schemas before any diagnosis row or learner record is written. Invalid output rolls back and does not change state.
+- Deterministic policy classifies the starting point, keeps uncertain conclusions uncertain, and stores a misconception only when the evidence quote is copied from the learner's own answer or reasoning.
+- The session stays DIAGNOSING after the report. No learning plan is created.
+- Routine tests and the local UI use the mock provider. No live Gemini request was made.
+
+2. Deliverables
+- Diagnostic service and routes under /api
+- Learning objective schema and prerequisite links
+- Question and judgment schemas
+- Diagnostic prompts
+- Deterministic response evaluator
+- Misconception hypotheses stored on the existing misconception records
+- Diagnostic report
+- Human-reviewed backpropagation benchmark
+
+3. Files Created
+- services/api/app/models/diagnostics.py
+- services/api/app/diagnostics/__init__.py
+- services/api/app/diagnostics/schemas.py
+- services/api/app/diagnostics/policy.py
+- services/api/app/diagnostics/prompts.py
+- services/api/app/diagnostics/service.py
+- services/api/app/schemas/diagnostics.py
+- services/api/app/api/diagnostics.py
+- services/api/app/ai/providers/diagnostic_mock.py
+- services/api/alembic/versions/0005_diagnostics.py
+- services/api/tests/test_diagnostics.py
+- services/api/tests/ai/test_diagnostic_benchmark.py
+- apps/web/src/components/DiagnosticPanel.tsx
+
+4. Files Modified
+- services/api/app/models/entities.py
+- services/api/app/models/__init__.py
+- services/api/app/main.py
+- services/api/app/api/deps.py
+- services/api/app/core/config.py
+- services/api/app/services/sessions.py
+- services/api/alembic/env.py
+- services/api/tests/conftest.py
+- services/api/tests/test_api.py
+- apps/web/src/lib/api.ts
+- apps/web/src/components/TeacherShell.tsx
+- docker-compose.yml
+- .env.example
+- README.md
+- AI_TEACHER_MVP_ROADMAP.md
+- .cursor/skills/implement-roadmap-phase/phases.md
+
+5. Tests Executed
+- Exact commands:
+- docker compose build api
+- docker compose run --rm api python -m pytest
+- npm test
+  (working directory: apps/web)
+- docker compose up -d --build api web
+- curl.exe -s http://localhost:8000/health
+- curl.exe -s http://localhost:3000/health
+- Browser at http://localhost:3000/learn: created topic Backpropagation, started a session, started diagnosis, saved objective chain-rule.apply, answered and gave separate reasoning, submitted, reloaded.
+
+6. Test Results
+- API: 53 passed, 0 failed, 0 skipped, in 36.87s
+- Web: 16 passed, 0 failed, 0 skipped, 5 files
+- Both health endpoints returned {"status":"ok","database":"ok"}
+- API logs: Running upgrade 0004_learner_intelligence -> 0005_diagnostics
+- Browser: status became Diagnosing; the question was labeled chain-rule.apply, short answer. After submit the report read "Beginner. The first unmet objective is chain-rule.apply." with "answer partial, reasoning weak · not confirmed · needs review" and confidence 0.60. After reload the same report, profile background, product-rule knowledge, misconception, and practice activity were still on the page. The local mock does not claim the answer was mastered.
+
+7. Acceptance Criteria
+- Passed: Diagnostic questions align with learning objectives. Beginner learners can be distinguished from partially knowledgeable learners. Answers and reasoning are evaluated separately. Partial understanding is recognized. Misconception hypotheses include supporting evidence. Uncertain conclusions remain uncertain. Invalid model output is rejected. Diagnostic results persist. Human-reviewed benchmark cases pass agreed thresholds.
+- Failed: none
+- Not implemented: none
+
+8. Known Limitations
+- No lesson plan, teaching, evaluation mastery, adaptation, or retention. The session stays DIAGNOSING.
+- The development mock used by the UI does not score real understanding. The benchmark uses scripted mock JSON. AI_PROVIDER=gemini is implemented and was not called.
+- Topics and objectives are shared among signed-in users. Attempts, responses, and learner records stay private to the signed-in learner.
+- A diagnosis writes observed knowledge only when understanding is solid, the answer is correct, the reasoning is sound, and confidence is not low. Partial understanding stays inferred and unconfirmed.
+- The human-reviewed sample is 6 scripted backpropagation cases. It is not a claim of universal diagnostic accuracy.
+- This phase made no live Gemini calls. Cost is USD 0.
+
+9. API Usage
+- Model: none
+- Requests: 0
+- Tokens: 0
+- Estimated cost: USD 0
+
+10. Demo Instructions
+- From the repository root, with AI_PROVIDER=mock: docker compose up --build
+- Open http://localhost:3000, sign in, and open /learn
+- Create a topic, start a session, and choose Start diagnosis
+- Save a learning objective, answer the question, and add reasoning separately
+- Submit. The report names the starting point and keeps answer and reasoning verdicts apart. Reload the page. The report is still there.
+- Do not set AI_PROVIDER=gemini for this demo. That path is not part of the verified Phase 3 run.
+
+11. Remaining Issues
+- None that block the Phase 3 gate. Do not start Phase 4 until this report is approved.
 
 PRODUCT OWNER DECISION:
 [ ] Approve

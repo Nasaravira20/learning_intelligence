@@ -52,6 +52,11 @@ def test_migrations_create_expected_tables(client) -> None:
         "misconception_records",
         "assessment_records",
         "learning_activities",
+        "learning_objectives",
+        "objective_prerequisites",
+        "diagnostic_attempts",
+        "diagnostic_questions",
+        "diagnostic_responses",
     } <= names
 
 

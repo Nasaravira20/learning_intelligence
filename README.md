@@ -113,3 +113,9 @@ The report is `docs/GEMINI_MODEL_STRATEGY.md`. Internal cost figures in that rep
 ## Learner dashboard
 
 Open http://localhost:3000/learn after signing in. The page saves a display name, a background note, preferences, a goal, a self-reported knowledge record, an assessment note, a misconception, and a learning activity. Self-reported knowledge and misconceptions are labeled “Inferred, not confirmed.” Reloading the page reads the same rows back from PostgreSQL. A session history view lists the knowledge, assessments, misconceptions, and activities saved for that topic.
+
+## Diagnosis
+
+A signed-in learner can add learning objectives to a topic, including prerequisite codes that already exist on that topic, then start a diagnosis from a saved session. The session moves from topic selected to diagnosing. Questions have to use those objective codes. Answers and reasoning are judged separately. A completed report stores the starting point, confidence, and any misconception evidence copied from the learner's own response. Uncertain judgments stay unconfirmed.
+
+Local diagnosis uses `AI_PROVIDER=mock` and does not call Gemini. Set `AI_PROVIDER=gemini` only for a live check after a model has passed `scripts/check_gemini_models.py` for the diagnostic task. Routine tests keep the mock provider.

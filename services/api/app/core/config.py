@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     gemini_max_calls_per_action: int = Field(default=2, alias="GEMINI_MAX_CALLS_PER_ACTION")
     gemini_model_candidates: str = Field(default="", alias="GEMINI_MODEL_CANDIDATES")
     gemini_verify_limit: int = Field(default=3, alias="GEMINI_VERIFY_LIMIT")
+    ai_provider: str = Field(default="mock", alias="AI_PROVIDER")
     app_name: str = "ai-teacher-api"
 
     model_config = SettingsConfigDict(
@@ -62,6 +63,14 @@ class Settings(BaseSettings):
         if value < 16 or value > 1024:
             raise ValueError("GEMINI_MAX_OUTPUT_TOKENS must be between 16 and 1024.")
         return value
+
+    @field_validator("ai_provider")
+    @classmethod
+    def provider_name(cls, value: str) -> str:
+        cleaned = value.strip().lower()
+        if cleaned not in {"mock", "gemini"}:
+            raise ValueError("AI_PROVIDER must be mock or gemini.")
+        return cleaned
 
     @field_validator("gemini_max_retries")
     @classmethod

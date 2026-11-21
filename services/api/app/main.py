@@ -10,7 +10,7 @@ from sqlalchemy.exc import DBAPIError, IntegrityError, OperationalError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app import __version__
-from app.api import auth, health, learner, learners, sessions, topics
+from app.api import auth, diagnostics, health, learner, learners, sessions, topics
 from app.core.config import get_settings, safe_database_target
 from app.core.errors import AppError, error_response
 from app.core.logging import configure_logging, log_event
@@ -68,6 +68,8 @@ def create_app() -> FastAPI:
     app.include_router(topics.router, prefix="/api")
     app.include_router(sessions.router, prefix="/api")
     app.include_router(learner.router, prefix="/api")
+    app.include_router(diagnostics.topics, prefix="/api")
+    app.include_router(diagnostics.sessions, prefix="/api")
     _register_exception_handlers(app)
     return app
 

@@ -1,3 +1,10 @@
+from app.models.diagnostics import (
+    DiagnosticAttempt,
+    DiagnosticQuestion,
+    DiagnosticResponse,
+    LearningObjective,
+    ObjectivePrerequisite,
+)
 from app.models.entities import (
     AiModelCheck,
     AiUsageRecord,
@@ -21,7 +28,12 @@ __all__ = [
     "AiUsageRecord",
     "AssessmentRecord",
     "AuthSession",
+    "DiagnosticAttempt",
+    "DiagnosticQuestion",
+    "DiagnosticResponse",
     "LearnerKnowledge",
+    "LearningObjective",
+    "ObjectivePrerequisite",
     "LearnerProfile",
     "LearningActivity",
     "LearningGoal",
