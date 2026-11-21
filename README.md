@@ -2,7 +2,7 @@
 
 Phase 0 is a local learning-session shell. The browser talks to Next.js, Next.js proxies to FastAPI, and FastAPI stores learners, topics, and sessions in PostgreSQL.
 
-A session starts in `TOPIC_SELECTED`. Diagnosis moves it to `DIAGNOSING`, and a learning plan moves it to `PLAN_READY`. Resume reloads that saved session and records when it was resumed. Teaching and pedagogy begin in later phases.
+A session starts in `TOPIC_SELECTED`. Diagnosis moves it to `DIAGNOSING`, a learning plan moves it to `PLAN_READY`, and a lesson moves it to `TEACHING`. A check can move it to `EVALUATING`, then to `REMEDIATION`, `MASTERED`, or `NEEDS_REVIEW`.
 
 A signed-in learner has a private record: profile, goals, preferences, topic knowledge, misconceptions, assessment history, and learning activities. Observed knowledge was demonstrated. Inferred knowledge is an estimate or a self-report, and a correction does not turn it into an observation. Session history is `GET /api/sessions/{session_id}/history`.
 
@@ -132,9 +132,13 @@ After a plan is ready, Choose strategies records a deterministic selection for t
 
 ## Teaching
 
-Start lesson runs the saved strategy choice as structured activities for the current plan objective. The session moves to teaching. A check sits before the last activity. The first hint does not contain the complete answer, and the answer is not returned by the API. Continue lowers the next activity's support by one step. I need more support inserts a high-support activity from a strategy already on the selection. Reloading or Resume keeps the same lesson. The lesson stays pending factuality review, and the session does not move on to evaluation.
+Start lesson runs the saved strategy choice as structured activities for the current plan objective. The session moves to teaching. A check sits before the last activity. The first hint does not contain the complete answer, and the answer is not returned by the API. Continue lowers the next activity's support by one step. I need more support inserts a high-support activity from a strategy already on the selection. Reloading or Resume keeps the same lesson. The lesson stays pending factuality review. Check this objective starts evaluation.
 
 Local teaching uses `AI_PROVIDER=mock` and does not call Gemini.
+
+## Evaluation
+
+Check this objective asks for the current objective and a reason. The rubric is fixed in code. A correct answer with weak reasoning keeps full credit and asks for another check. It does not mark the objective mastered. A partial answer records partial credit, explains the missing part, and can teach again with a different registered strategy. An uncertain result stays in needs review. Mastery requires a correct answer, sound reasoning, and solid understanding, and that evidence is stored as observed. The development mock does not score real understanding. No live Gemini call is made by the routine tests.
 
 ## Pedagogy registry
 

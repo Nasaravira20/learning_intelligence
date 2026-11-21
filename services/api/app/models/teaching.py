@@ -14,13 +14,14 @@ from app.db.base import Base
 class TeachingLesson(Base):
     __tablename__ = "teaching_lessons"
     __table_args__ = (
-        CheckConstraint("status IN ('active', 'completed')", name="ck_teaching_lessons_status"),
+        CheckConstraint("status IN ('active', 'completed', 'superseded')", name="ck_teaching_lessons_status"),
         CheckConstraint(
             "review_status = 'pending_human_review'",
             name="ck_teaching_lessons_review_pending",
         ),
+        CheckConstraint("revision >= 1", name="ck_teaching_lessons_revision"),
         CheckConstraint("length(btrim(objective_code)) > 0", name="ck_teaching_lessons_objective_not_blank"),
-        UniqueConstraint("session_id", name="uq_teaching_lessons_session"),
+        UniqueConstraint("session_id", "revision", name="uq_teaching_lessons_session_revision"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -29,6 +30,7 @@ class TeachingLesson(Base):
         ForeignKey("learning_sessions.id", ondelete="CASCADE"),
         nullable=False,
     )
+    revision: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     learner_id: Mapped[uuid.UUID] = mapped_column(
         Uuid(as_uuid=True),
         ForeignKey("learner_profiles.id", ondelete="CASCADE"),

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 
-import { LearningSession, TeachingLesson, UiError, getLesson, revealHint, submitTeachingAttempt, toUiError } from "@/lib/api";
+import { LearningSession, TeachingLesson, UiError, getLesson, revealHint, startEvaluation, submitTeachingAttempt, toUiError } from "@/lib/api";
 
 const KIND_LABEL: Record<string, string> = {
   explanation: "Explanation",
@@ -17,9 +17,11 @@ const KIND_LABEL: Record<string, string> = {
 export function TeachingPanel({
   session,
   refreshKey,
+  onSession,
 }: {
   session: LearningSession;
   refreshKey: number;
+  onSession: (session: LearningSession) => void;
 }) {
   const [lesson, setLesson] = useState<TeachingLesson | null>(null);
   const [answer, setAnswer] = useState("");
@@ -78,6 +80,19 @@ export function TeachingPanel({
     }
   }
 
+  async function onCheck() {
+    setError(null);
+    setPending(true);
+    try {
+      const next = await startEvaluation(session.id);
+      onSession({ ...session, status: next.session_status });
+    } catch (caught) {
+      setError(toUiError(caught));
+    } finally {
+      setPending(false);
+    }
+  }
+
   if (session.status !== "TEACHING" || lesson === null) {
     return null;
   }
@@ -93,7 +108,7 @@ export function TeachingPanel({
         </div>
       ) : null}
       <p className="text-sm text-stone-700">
-        Objective {lesson.objective_code}. Factuality review is still pending. Evaluation has not started.
+        Objective {lesson.objective_code}. Factuality review is still pending.
       </p>
       <ol className="grid gap-3 text-sm">
         {lesson.activities.map((activity) => (
@@ -126,7 +141,7 @@ export function TeachingPanel({
         ))}
       </ol>
       {lesson.status === "completed" ? (
-        <p className="text-sm text-stone-600">Lesson activities are finished. Evaluation has not started.</p>
+        <p className="text-sm text-stone-600">Lesson activities are finished.</p>
       ) : current ? (
         <form onSubmit={onAttempt} className="grid gap-2">
           <label className="grid gap-1 text-sm" htmlFor={`attempt-${current.id}`}>
@@ -168,6 +183,14 @@ export function TeachingPanel({
           </div>
         </form>
       ) : null}
+      <button
+        type="button"
+        onClick={onCheck}
+        disabled={pending}
+        className="w-fit rounded border border-stone-400 px-3 py-2 text-sm disabled:opacity-50"
+      >
+        Check this objective
+      </button>
     </div>
   );
 }

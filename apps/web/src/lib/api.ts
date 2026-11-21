@@ -680,3 +680,47 @@ export function submitTeachingAttempt(
     body: JSON.stringify({ outcome, answer_text: answerText }),
   });
 }
+
+export type EvaluationAttempt = {
+  id: string;
+  session_id: string;
+  revision: number;
+  status: string;
+  session_status: string;
+  objective_code: string;
+  prompt: string;
+  rubric: string[];
+  decision: string | null;
+  credit: string | null;
+  feedback: string | null;
+  answer_verdict: string | null;
+  reasoning_verdict: string | null;
+  understanding: string | null;
+  remediation_strategy: string | null;
+  misconception_evidence: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export function startEvaluation(sessionId: string): Promise<EvaluationAttempt> {
+  return apiRequest<EvaluationAttempt>(`/api/sessions/${sessionId}/evaluation`, { method: "POST" });
+}
+
+export function getEvaluation(sessionId: string): Promise<EvaluationAttempt> {
+  return apiRequest<EvaluationAttempt>(`/api/sessions/${sessionId}/evaluation`);
+}
+
+export function submitEvaluation(
+  sessionId: string,
+  answerText: string,
+  reasoningText: string,
+): Promise<EvaluationAttempt> {
+  return apiRequest<EvaluationAttempt>(`/api/sessions/${sessionId}/evaluation/response`, {
+    method: "POST",
+    body: JSON.stringify({ answer_text: answerText, reasoning_text: reasoningText }),
+  });
+}
+
+export function startRemediation(sessionId: string): Promise<EvaluationAttempt> {
+  return apiRequest<EvaluationAttempt>(`/api/sessions/${sessionId}/evaluation/remediation`, { method: "POST" });
+}

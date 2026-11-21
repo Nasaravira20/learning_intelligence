@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.ai.errors import ProviderError
@@ -66,6 +66,7 @@ def start_lesson(db: Session, learning_session: LearningSession, provider: Model
         learner_id=learning_session.learner_id,
         selection_id=selection.id,
         objective_code=objective.code,
+        revision=_next_revision(db, learning_session.id),
         status="active",
         review_status="pending_human_review",
         created_at=utcnow(),
@@ -79,6 +80,78 @@ def start_lesson(db: Session, learning_session: LearningSession, provider: Model
         logger,
         logging.INFO,
         "lesson_started",
+        session_id=learning_session.id,
+        lesson_id=lesson.id,
+        objective_code=objective.code,
+    )
+    return _read(db, lesson, learning_session.status)
+
+
+def replace_lesson(db: Session, learning_session: LearningSession, provider: ModelProvider) -> LessonRead:
+    if learning_session.status != "TEACHING":
+        raise ConflictError("teaching_not_ready", "A replacement lesson starts from teaching.")
+    previous = db.scalar(
+        select(TeachingLesson).where(
+            TeachingLesson.session_id == learning_session.id,
+            TeachingLesson.status == "active",
+        )
+    )
+    if previous is not None:
+        current = db.scalar(
+            select(TeachingActivity).where(
+                TeachingActivity.lesson_id == previous.id,
+                TeachingActivity.status == "current",
+            )
+        )
+        if current is not None:
+            current.status = "completed"
+        previous.status = "superseded"
+        previous.updated_at = utcnow()
+        db.flush()
+    selection = _selection(db, learning_session.id)
+    if selection is None or not selection.primary_strategy_id:
+        raise ConflictError("teaching_not_ready", "Choose strategies before starting a lesson.")
+    objective = _current_objective(db, learning_session)
+    fallback = selection.fallback_strategy_id or selection.primary_strategy_id
+    supporting = [item for item in selection.supporting_strategy_ids if isinstance(item, str) and item.strip()]
+    prompt = lesson_prompt(
+        objective_code=objective.code,
+        concept=objective.concept,
+        statement=objective.statement,
+        primary_strategy_id=selection.primary_strategy_id,
+        supporting_strategy_ids=supporting,
+        fallback_strategy_id=fallback,
+    )
+    draft = _draft(db, provider, prompt, f"{learning_session.id}:replace")
+    allowed = {selection.primary_strategy_id, fallback, *supporting}
+    try:
+        accept_lesson(
+            draft,
+            objective_code=objective.code,
+            allowed_strategy_ids=allowed,
+            required_strategy_ids={selection.primary_strategy_id, *supporting},
+        )
+    except ValueError:
+        log_event(logger, logging.WARNING, "teaching_output_rejected", error_class="malformed_output")
+        raise AppError("malformed_output", "The model output did not match the required schema.", 422) from None
+    lesson = TeachingLesson(
+        session_id=learning_session.id,
+        learner_id=learning_session.learner_id,
+        selection_id=selection.id,
+        objective_code=objective.code,
+        revision=_next_revision(db, learning_session.id),
+        status="active",
+        review_status="pending_human_review",
+        created_at=utcnow(),
+        updated_at=utcnow(),
+    )
+    db.add(lesson)
+    db.flush()
+    _store_activities(db, lesson, draft)
+    log_event(
+        logger,
+        logging.INFO,
+        "lesson_replaced",
         session_id=learning_session.id,
         lesson_id=lesson.id,
         objective_code=objective.code,
@@ -328,7 +401,19 @@ def _following(db: Session, lesson_id, position: int) -> TeachingActivity | None
 
 
 def _lesson(db: Session, session_id) -> TeachingLesson | None:
-    return db.scalar(select(TeachingLesson).where(TeachingLesson.session_id == session_id))
+    active = db.scalar(
+        select(TeachingLesson).where(TeachingLesson.session_id == session_id, TeachingLesson.status == "active")
+    )
+    if active is not None:
+        return active
+    return db.scalar(
+        select(TeachingLesson).where(TeachingLesson.session_id == session_id).order_by(TeachingLesson.revision.desc())
+    )
+
+
+def _next_revision(db: Session, session_id) -> int:
+    current = db.scalar(select(func.max(TeachingLesson.revision)).where(TeachingLesson.session_id == session_id))
+    return int(current or 0) + 1
 
 
 def _selection(db: Session, session_id) -> PedagogySelection | None:

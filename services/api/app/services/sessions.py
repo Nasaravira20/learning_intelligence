@@ -117,7 +117,38 @@ def enter_teaching(session: Session, item: LearningSession) -> LearningSession:
         return item
     if item.status != "PLAN_READY":
         raise AppError("invalid_transition", "This session cannot start teaching.", 409)
-    item.status = "TEACHING"
+    return _set_status(session, item, "TEACHING")
+
+
+def enter_evaluation(session: Session, item: LearningSession) -> LearningSession:
+    if item.status == "EVALUATING":
+        return item
+    if item.status not in {"TEACHING", "NEEDS_REVIEW"}:
+        raise AppError("invalid_transition", "This session cannot start an evaluation.", 409)
+    return _set_status(session, item, "EVALUATING")
+
+
+def apply_evaluation_decision(session: Session, item: LearningSession, decision: str) -> LearningSession:
+    if item.status != "EVALUATING":
+        raise AppError("invalid_transition", "This session is not being evaluated.", 409)
+    if decision == "further_assessment":
+        return item
+    target = {"mastered": "MASTERED", "remediation": "REMEDIATION", "needs_review": "NEEDS_REVIEW"}.get(decision)
+    if target is None:
+        raise AppError("invalid_transition", "That evaluation decision is not a session state.", 409)
+    return _set_status(session, item, target)
+
+
+def resume_teaching(session: Session, item: LearningSession) -> LearningSession:
+    if item.status == "TEACHING":
+        return item
+    if item.status != "REMEDIATION":
+        raise AppError("invalid_transition", "Only remediation can return to teaching.", 409)
+    return _set_status(session, item, "TEACHING")
+
+
+def _set_status(session: Session, item: LearningSession, status: str) -> LearningSession:
+    item.status = status
     item.updated_at = utcnow()
     session.flush()
     log_event(

@@ -59,6 +59,17 @@ def record_selection(
     return SelectionRead.from_row(row, learning_session.status)
 
 
+def save_decision(db: Session, learning_session: LearningSession, decision: SelectionDecision) -> SelectionRead:
+    current = _active(db, learning_session.id)
+    revision = 1
+    if current is not None:
+        current.status = "superseded"
+        revision = current.revision + 1
+        db.flush()
+    row = _write(db, learning_session, decision, revision)
+    return SelectionRead.from_row(row, learning_session.status)
+
+
 def context_from_plan(db: Session, learning_session: LearningSession) -> SelectorInput:
     plan = db.scalar(
         sql_select(LearningPlan).where(

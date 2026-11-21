@@ -1443,14 +1443,14 @@ Evaluation
 
 ## Acceptance Tests
 
-- [ ] Correct answer with weak reasoning does not automatically prove mastery.
-- [ ] Partial credit is supported.
-- [ ] Feedback explains missing understanding.
-- [ ] Misconception detection includes supporting evidence.
-- [ ] Ambiguous evaluation does not force mastery.
-- [ ] Remediation can choose a different teaching strategy.
-- [ ] Reassessment is supported.
-- [ ] State transitions are valid and persistent.
+- [x] Correct answer with weak reasoning does not automatically prove mastery.
+- [x] Partial credit is supported.
+- [x] Feedback explains missing understanding.
+- [x] Misconception detection includes supporting evidence.
+- [x] Ambiguous evaluation does not force mastery.
+- [x] Remediation can choose a different teaching strategy.
+- [x] Reassessment is supported.
+- [x] State transitions are valid and persistent.
 - [ ] Evaluation quality is compared with human raters.
 
 ## Phase Gate

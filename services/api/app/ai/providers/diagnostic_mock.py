@@ -18,6 +18,10 @@ class DiagnosticMockProvider:
             payload = {"judgments": _judgments(request.prompt)}
         elif "Task: teaching_lesson" in request.prompt:
             payload = scripted_lesson(request.prompt)
+        elif "Task: evaluation_question" in request.prompt:
+            payload = _evaluation_question(request.prompt)
+        elif "Task: evaluation_judgment" in request.prompt:
+            payload = _evaluation_judgment(request.prompt)
         else:
             raise ProviderError("unsupported_operation", False)
         return GenerationResult(
@@ -74,3 +78,45 @@ def _field(block: str, label: str) -> str:
         if line.startswith(label):
             return line[len(label) :].strip()
     return ""
+
+
+def _evaluation_question(prompt: str) -> dict[str, object]:
+    objective = _labeled(prompt, "OBJECTIVE ")
+    concept = _labeled(prompt, "CONCEPT ")
+    return {
+        "objective_code": objective,
+        "prompt": f"Show {objective} for {concept}, and say why that result follows.",
+    }
+
+
+def _evaluation_judgment(prompt: str) -> dict[str, object]:
+    objective = _labeled(prompt, "OBJECTIVE ")
+    answer = _labeled(prompt, "ANSWER: ")
+    reasoning = _labeled(prompt, "REASONING: ")
+    blank = answer in {"", "(blank)"}
+    unsure = "not sure" in f"{answer} {reasoning}".casefold()
+    if blank:
+        verdict, reason, understanding, confidence = "unanswered", "absent", "none", "low"
+    elif unsure:
+        verdict, reason, understanding, confidence = "unanswered", "uncertain", "uncertain", "low"
+    elif "weak reason" in reasoning.casefold():
+        verdict, reason, understanding, confidence = "correct", "weak", "partial", "medium"
+    elif "partial" in answer.casefold():
+        verdict, reason, understanding, confidence = "partial", "partial", "partial", "medium"
+    else:
+        verdict, reason, understanding, confidence = "partial", "weak", "partial", "medium"
+    return {
+        "objective_code": objective,
+        "answer_verdict": verdict,
+        "reasoning_verdict": reason,
+        "understanding": understanding,
+        "confidence": confidence,
+        "misconception": None,
+    }
+
+
+def _labeled(prompt: str, prefix: str) -> str:
+    for line in prompt.splitlines():
+        if line.startswith(prefix):
+            return line[len(prefix) :].strip()
+    raise ProviderError("unknown", False)

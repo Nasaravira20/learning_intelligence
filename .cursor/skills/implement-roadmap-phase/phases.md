@@ -20,7 +20,7 @@ Phase 0 acceptance: frontend and backend start, they communicate, migrations wor
 
 Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 is approved.
 
-Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is approved. The product owner approved starting Phase 6 on 2026-11-21. Phase 6 is approved. The product owner approved starting Phase 7 on 2026-11-21. Phase 7 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 8 until the product owner approves the Phase 7 report.
+Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is approved. The product owner approved starting Phase 6 on 2026-11-21. Phase 6 is approved. The product owner approved starting Phase 7 on 2026-11-21. Phase 7 is approved. The product owner approved starting Phase 8 on 2026-11-21. Phase 8 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 9 until the product owner approves the Phase 8 report.
 
 Later acceptance criteria stay in `AI_TEACHER_MVP_ROADMAP.md` sections 12 and 18. Do not mark a criterion done unless it was executed.
 
@@ -828,7 +828,104 @@ Name: Teaching Engine
 - Reload the page. The same lesson and status Teaching remain. Evaluation has not started.
 
 11. Remaining Issues
-- A person still has to review factuality and teaching quality. Do not start Phase 8 until this report is approved.
+- A person still has to review factuality and teaching quality. The product owner approved starting Phase 8 on 2026-11-21.
+
+PRODUCT OWNER DECISION:
+[x] Approve
+[ ] Request changes
+```
+
+# Phase 8 completion report
+
+```text
+PHASE COMPLETION REPORT
+
+Phase: 8
+Name: Evaluation and Adaptation Engine
+
+1. Implementation Summary
+- A check asks for the current lesson objective and a separate reason. The rubric is code, not model output. Correctness, reasoning, and understanding are scored apart from each other.
+- A correct answer with weak reasoning keeps credit 1.000 and stays in further assessment. It does not become MASTERED. Partial evidence records credit 0.500, explains the missing part, and moves the session to REMEDIATION. Uncertain evidence moves it to NEEDS_REVIEW. Strong evidence records observed mastery.
+- A misconception is stored only when its evidence is copied from the learner's answer or reasoning. Remediation selects a different registered strategy and opens another lesson. Another check is a new attempt revision.
+- No live Gemini call was made. The mock does not score real understanding.
+
+2. Deliverables
+- Evaluation service
+- Assessment generator
+- Rubric definitions
+- Feedback generator
+- Adaptation policies
+- Mastery records
+- docs/EVALUATION_REVIEW_CHECKLIST.md
+
+3. Files Created
+- services/api/app/evaluation/
+- services/api/app/models/evaluation.py
+- services/api/app/schemas/evaluation.py
+- services/api/app/api/evaluation.py
+- services/api/alembic/versions/0009_evaluation.py
+- services/api/tests/test_evaluation.py
+- services/api/tests/test_evaluation_policy.py
+- apps/web/src/components/EvaluationPanel.tsx
+- docs/EVALUATION_REVIEW_CHECKLIST.md
+
+4. Files Modified
+- services/api/app/ai/providers/diagnostic_mock.py
+- services/api/app/services/sessions.py
+- services/api/app/pedagogy/selection_service.py
+- services/api/app/teaching/service.py
+- services/api/app/models/teaching.py
+- services/api/app/models/entities.py
+- services/api/app/models/__init__.py
+- services/api/alembic/env.py
+- services/api/app/main.py
+- services/api/tests/conftest.py
+- services/api/tests/test_api.py
+- apps/web/src/lib/api.ts
+- apps/web/src/components/TeachingPanel.tsx
+- apps/web/src/components/TeacherShell.tsx
+- README.md
+- AI_TEACHER_MVP_ROADMAP.md
+- .cursor/skills/implement-roadmap-phase/phases.md
+
+5. Tests Executed
+- Exact commands:
+- docker compose run --rm --build api python -m pytest
+  (working directory: repository root)
+- npm test
+  (working directory: apps/web)
+- npx tsc --noEmit
+  (working directory: apps/web)
+
+6. Test Results
+- API: 100 passed, 0 failed, 0 skipped, in 87.12s.
+- Web: 16 passed, 0 failed, 0 skipped, 5 files. npx tsc --noEmit exited 0.
+
+7. Acceptance Criteria
+- Passed: Correct answer with weak reasoning does not automatically prove mastery. Partial credit is supported. Feedback explains missing understanding. Misconception detection includes supporting evidence. Ambiguous evaluation does not force mastery. Remediation can choose a different teaching strategy. Reassessment is supported. State transitions are valid and persistent.
+- Failed: none
+- Not implemented: Evaluation quality is compared with human raters. The checklist is docs/EVALUATION_REVIEW_CHECKLIST.md. No person has recorded that comparison.
+
+8. Known Limitations
+- PRACTICE in the roadmap diagram is a teaching activity, not a session status. Further assessment stays EVALUATING and opens another attempt.
+- The remediation strategy comes from the benchmark selector. The registry is still pending human review, so this is not a production-certified choice.
+- The development mock matches a few answer phrases. It does not judge real understanding.
+- This phase made no live Gemini calls. Cost is USD 0.
+
+9. API Usage
+- Model: none
+- Requests: 0
+- Tokens: 0
+- Estimated cost: USD 0
+
+10. Demo Instructions
+- From the repository root: docker compose up --build
+- Sign in, open /learn, teach a lesson, then choose Check this objective.
+- Submit an answer that includes the word partial. Credit is 0.500 and the status is Remediation, not Mastered.
+- Choose Teach a different way. The session returns to Teaching with a different strategy. Reload the page. The lesson remains.
+
+11. Remaining Issues
+- A person still has to compare evaluation quality with human raters. Do not start Phase 9 until this report is approved.
 
 PRODUCT OWNER DECISION:
 [ ] Approve

@@ -21,6 +21,7 @@ import {
 import { slugify } from "@/lib/slug";
 import { DiagnosticPanel } from "@/components/DiagnosticPanel";
 import { PlanPanel } from "@/components/PlanPanel";
+import { EvaluationPanel } from "@/components/EvaluationPanel";
 import { TeachingPanel } from "@/components/TeachingPanel";
 import { LearnerDashboard } from "@/components/LearnerDashboard";
 
@@ -43,6 +44,18 @@ function sessionStatusLabel(status: string): string {
   }
   if (status === "TEACHING") {
     return "Teaching";
+  }
+  if (status === "EVALUATING") {
+    return "Evaluating";
+  }
+  if (status === "REMEDIATION") {
+    return "Remediation";
+  }
+  if (status === "MASTERED") {
+    return "Mastered";
+  }
+  if (status === "NEEDS_REVIEW") {
+    return "Needs review";
   }
   if (status === "TOPIC_SELECTED") {
     return "Topic selected";
@@ -371,7 +384,8 @@ export function TeacherShell() {
                 onSession={replaceSession}
                 onRefresh={() => setRefreshKey((value) => value + 1)}
               />
-              <TeachingPanel session={session} refreshKey={refreshKey} />
+              <TeachingPanel session={session} refreshKey={refreshKey} onSession={replaceSession} />
+              <EvaluationPanel session={session} refreshKey={refreshKey} onSession={replaceSession} />
             </li>
           ))}
         </ul>
