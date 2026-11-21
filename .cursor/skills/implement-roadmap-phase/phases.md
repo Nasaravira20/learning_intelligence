@@ -20,7 +20,7 @@ Phase 0 acceptance: frontend and backend start, they communicate, migrations wor
 
 Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 is approved.
 
-Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 6 until the product owner approves the Phase 5 report.
+Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is approved. The product owner approved starting Phase 6 on 2026-11-21. Phase 6 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 7 until the product owner approves the Phase 6 report.
 
 Later acceptance criteria stay in `AI_TEACHER_MVP_ROADMAP.md` sections 12 and 18. Do not mark a criterion done unless it was executed.
 
@@ -643,7 +643,97 @@ Name: Research Library and Pedagogy Registry
 - Do not mark an entry reviewed until the checklist in docs/HUMAN_REVIEW_CHECKLIST.md has been completed by a person.
 
 11. Remaining Issues
-- None that block the Phase 5 gate. A person still has to review the notes before any strategy can be selected in production. Do not start Phase 6 until this report is approved.
+- None that block the Phase 5 gate. A person still has to review the notes before any strategy can be selected in production. The product owner approved starting Phase 6 on 2026-11-21.
+
+PRODUCT OWNER DECISION:
+[x] Approve
+[ ] Request changes
+```
+
+# Phase 6 completion report
+
+```text
+PHASE COMPLETION REPORT
+
+Phase: 6
+Name: Pedagogy Selection Engine
+
+1. Implementation Summary
+- Deterministic policies map learner context to registered P0 strategy ids. The selector checks each strategy's learner conditions and avoid conditions before ranking.
+- A missing prerequisite selects small_step_instruction, with concrete examples and worked examples in support, and checks_for_understanding as the fallback. Retrieval practice is rejected until the concept has been taught. One correct answer with weak reasoning does not select mastery learning.
+- Repeated failure skips the strategy that already failed. Strong performance leaves scaffolding, worked examples, and guided practice off the ranked list.
+- The same input, policy version 2026.11.21, and registry version 2026.11.21 return the same strategy ids. The decision is stored on the session and does not change PLAN_READY. controls_teaching is forced false, including when a reviewed registry would otherwise allow a production primary.
+- The live registry is still pending human review, so production_primary_strategy stays empty. No live Gemini call was made.
+
+2. Deliverables
+- Pedagogy selector
+- Eligibility engine
+- Selection policies
+- Ranking logic
+- Selection audit records
+- Benchmark scenarios in services/api/tests/test_selector.py
+- Automated tests
+
+3. Files Created
+- services/api/app/pedagogy/selector.py
+- services/api/app/pedagogy/selection_service.py
+- services/api/app/models/pedagogy.py
+- services/api/alembic/versions/0007_pedagogy_selections.py
+- services/api/tests/test_selector.py
+- services/api/tests/test_pedagogy_selection.py
+
+4. Files Modified
+- services/api/app/api/pedagogy.py
+- services/api/app/schemas/pedagogy.py
+- services/api/app/main.py
+- services/api/app/models/__init__.py
+- services/api/alembic/env.py
+- services/api/tests/conftest.py
+- services/api/tests/test_api.py
+- apps/web/src/lib/api.ts
+- apps/web/src/components/PlanPanel.tsx
+- README.md
+- AI_TEACHER_MVP_ROADMAP.md
+- .cursor/skills/implement-roadmap-phase/phases.md
+
+5. Tests Executed
+- Exact commands:
+- docker compose run --rm --build api python -m pytest
+  (working directory: repository root)
+- npm test
+  (working directory: apps/web)
+- npx tsc --noEmit
+  (working directory: apps/web)
+
+6. Test Results
+- API: 81 passed, 0 failed, 0 skipped, in 59.42s. An earlier run failed 2 persistence tests because the SQLAlchemy select name shadowed the selector. The passing run is the one after that rename.
+- Web: 16 passed, 0 failed, 0 skipped, 5 files. npx tsc --noEmit exited 0.
+
+7. Acceptance Criteria
+- Passed: Only registered strategies can be selected. Learner context affects selection. Ineligible strategies are rejected. Limitations are respected. Repeated failures trigger an alternative approach. Strong performance can reduce instructional support. Selection rationale is linked to evidence and learner context. Safe fallback exists. Selection is reproducible under unchanged inputs and policy versions. Selection decisions persist.
+- Failed: none
+- Not implemented: none
+
+8. Known Limitations
+- The selector does not control a teaching session. controls_teaching is constrained false in the database.
+- Production selection stays empty until a person reviews the registry. The benchmark primary is still recorded so the policy can be inspected.
+- No lesson is generated. Phase 7 owns teaching.
+- This phase made no live Gemini calls. Cost is USD 0.
+
+9. API Usage
+- Model: none
+- Requests: 0
+- Tokens: 0
+- Estimated cost: USD 0
+
+10. Demo Instructions
+- From the repository root: docker compose up --build
+- Sign in, open /learn, build a plan, and choose strategies.
+- The page names the benchmark strategy and says teaching has not started. Reload keeps the same revision.
+- Do not treat the benchmark primary as a production teaching choice while production_primary_strategy is empty.
+
+11. Remaining Issues
+- None that block the Phase 6 gate. Do not start Phase 7 until this report is approved. Do not let this selector run a teaching session until the benchmark and the registry review are accepted.
 
 PRODUCT OWNER DECISION:
 [ ] Approve

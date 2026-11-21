@@ -590,3 +590,34 @@ export function getLearningPlan(sessionId: string): Promise<LearningPlan> {
 export function reviseLearningPlan(sessionId: string): Promise<LearningPlan> {
   return apiRequest<LearningPlan>(`/api/sessions/${sessionId}/plan/revision`, { method: "POST" });
 }
+
+export type PedagogySelection = {
+  id: string;
+  session_id: string;
+  revision: number;
+  status: string;
+  session_status: string;
+  policy_version: string;
+  registry_version: string;
+  situation: string;
+  primary_strategy: string | null;
+  supporting_strategies: string[];
+  sequence: string[];
+  success_signals: string[];
+  fallback_strategy: string | null;
+  rationale: string;
+  controls_teaching: boolean;
+  production_primary_strategy: string | null;
+  created_at: string;
+};
+
+export function chooseStrategies(sessionId: string): Promise<PedagogySelection> {
+  return apiRequest<PedagogySelection>(`/api/sessions/${sessionId}/pedagogy-selection`, {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}
+
+export function getStrategySelection(sessionId: string): Promise<PedagogySelection> {
+  return apiRequest<PedagogySelection>(`/api/sessions/${sessionId}/pedagogy-selection`);
+}

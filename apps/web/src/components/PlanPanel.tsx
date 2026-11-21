@@ -6,10 +6,13 @@ import {
   DiagnosisReport,
   LearningPlan,
   LearningSession,
+  PedagogySelection,
   UiError,
+  chooseStrategies,
   createLearningPlan,
   getDiagnosis,
   getLearningPlan,
+  getStrategySelection,
   reviseLearningPlan,
   startFollowUp,
   toUiError,
@@ -37,6 +40,7 @@ export function PlanPanel({
   onRefresh: () => void;
 }) {
   const [plan, setPlan] = useState<LearningPlan | null>(null);
+  const [selection, setSelection] = useState<PedagogySelection | null>(null);
   const [diagnosisComplete, setDiagnosisComplete] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const [error, setError] = useState<UiError | null>(null);
@@ -79,6 +83,23 @@ export function PlanPanel({
           }
           setError(uiError);
         });
+      getStrategySelection(session.id)
+        .then((next) => {
+          if (active) {
+            setSelection(next);
+          }
+        })
+        .catch((caught) => {
+          if (!active) {
+            return;
+          }
+          const uiError = toUiError(caught);
+          if (uiError.code === "selection_not_found") {
+            setSelection(null);
+            return;
+          }
+          setError(uiError);
+        });
     }
     return () => {
       active = false;
@@ -105,6 +126,18 @@ export function PlanPanel({
     setPending(true);
     try {
       setPlan(await reviseLearningPlan(session.id));
+    } catch (caught) {
+      setError(toUiError(caught));
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function onChoose() {
+    setError(null);
+    setPending(true);
+    try {
+      setSelection(await chooseStrategies(session.id));
     } catch (caught) {
       setError(toUiError(caught));
     } finally {
@@ -193,8 +226,33 @@ export function PlanPanel({
               >
                 Revise plan
               </button>
+              <button
+                type="button"
+                onClick={onChoose}
+                disabled={pending}
+                className="rounded border border-stone-400 px-3 py-2 disabled:opacity-50"
+              >
+                Choose strategies
+              </button>
             </div>
           )}
+          {selection ? (
+            <div className="rounded border border-stone-200 px-3 py-2">
+              <p className="font-medium">
+                Benchmark strategy: {selection.primary_strategy}. Teaching has not started.
+              </p>
+              <p className="text-stone-700">
+                Also considered: {selection.supporting_strategies.join(", ") || "none"}. Fallback:{" "}
+                {selection.fallback_strategy}.
+              </p>
+              <ol className="mt-2 grid gap-1 text-stone-700">
+                {selection.sequence.map((step, index) => (
+                  <li key={`${index}-${step}`}>{step}</li>
+                ))}
+              </ol>
+              <p className="mt-2 text-stone-600">{selection.rationale}</p>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

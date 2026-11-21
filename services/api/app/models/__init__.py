@@ -14,6 +14,7 @@ from app.models.entities import (
     LearningTopic,
     User,
 )
+from app.models.pedagogy import PedagogySelection
 from app.models.planning import LearningPlan, LearningPlanStep, TopicConcept
 from app.models.learner_records import (
     AssessmentRecord,
@@ -37,6 +38,7 @@ __all__ = [
     "LearningPlan",
     "LearningPlanStep",
     "ObjectivePrerequisite",
+    "PedagogySelection",
     "TopicConcept",
     "LearnerProfile",
     "LearningActivity",

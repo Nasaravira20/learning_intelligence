@@ -73,6 +73,7 @@ def create_app() -> FastAPI:
     app.include_router(planning.topics, prefix="/api")
     app.include_router(planning.sessions, prefix="/api")
     app.include_router(pedagogy.router, prefix="/api")
+    app.include_router(pedagogy.sessions, prefix="/api")
     _register_exception_handlers(app)
     return app
 

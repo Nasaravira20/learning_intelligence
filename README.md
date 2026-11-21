@@ -126,6 +126,10 @@ After a diagnosis is complete, build a learning plan from the same session. The 
 
 The sequence is computed in the API. Routine tests keep `AI_PROVIDER=mock` and do not call Gemini.
 
+## Pedagogy selection
+
+After a plan is ready, Choose strategies records a deterministic selection for the current plan step. The same inputs and policy version return the same strategy ids. A missing prerequisite selects small-step instruction with concrete and worked examples. Repeated failure skips the strategy that already failed. Strong performance leaves scaffolding, worked examples, and guided practice off the list. The saved decision does not change the session away from plan ready, and `controls_teaching` stays false. Unreviewed registry entries are not a production selection. `GET /api/sessions/{session_id}/pedagogy-selection` returns the saved decision to the signed-in learner only.
+
 ## Pedagogy registry
 
 `research/strategies/` and `research/sources/` hold the P0 catalogue. Bibliographic metadata was checked on 2026-11-21. The notes are original and pending human review, so none of the strategies can be selected in production. `GET /api/pedagogy/registry` returns the catalogue and an empty `production_selectable_strategy_ids` list. Ingestion and the review checklist are in `docs/RESEARCH_INGESTION.md` and `docs/HUMAN_REVIEW_CHECKLIST.md`. This phase does not choose a strategy and does not start teaching.

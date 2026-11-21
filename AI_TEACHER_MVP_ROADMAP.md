@@ -1292,16 +1292,16 @@ Select teaching strategies based on learner context, learning objectives and ava
 
 ## Acceptance Tests
 
-- [ ] Only registered strategies can be selected.
-- [ ] Learner context affects selection.
-- [ ] Ineligible strategies are rejected.
-- [ ] Limitations are respected.
-- [ ] Repeated failures trigger an alternative approach.
-- [ ] Strong performance can reduce instructional support.
-- [ ] Selection rationale is linked to evidence and learner context.
-- [ ] Safe fallback exists.
-- [ ] Selection is reproducible under unchanged inputs and policy versions.
-- [ ] Selection decisions persist.
+- [x] Only registered strategies can be selected.
+- [x] Learner context affects selection.
+- [x] Ineligible strategies are rejected.
+- [x] Limitations are respected.
+- [x] Repeated failures trigger an alternative approach.
+- [x] Strong performance can reduce instructional support.
+- [x] Selection rationale is linked to evidence and learner context.
+- [x] Safe fallback exists.
+- [x] Selection is reproducible under unchanged inputs and policy versions.
+- [x] Selection decisions persist.
 
 ## Phase Gate
 

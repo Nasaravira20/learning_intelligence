@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+from datetime import datetime
+from uuid import UUID
+
 from pydantic import BaseModel
 
+from app.models.pedagogy import PedagogySelection
 from app.pedagogy.registry import PedagogyRegistry
+from app.pedagogy.selector import RejectedStrategy, SelectorInput
 
 
 class StrategySummary(BaseModel):
@@ -57,4 +62,54 @@ class RegistryRead(BaseModel):
                 )
                 for item in registry.sources
             ],
+        )
+
+
+class SelectionRequest(BaseModel):
+    context: SelectorInput | None = None
+
+
+class SelectionRead(BaseModel):
+    id: UUID
+    session_id: UUID
+    revision: int
+    status: str
+    session_status: str
+    policy_version: str
+    registry_version: str
+    situation: str
+    primary_strategy: str | None
+    supporting_strategies: list[str]
+    sequence: list[str]
+    success_signals: list[str]
+    fallback_strategy: str | None
+    rationale: str
+    controls_teaching: bool
+    production_primary_strategy: str | None
+    rejected: list[RejectedStrategy]
+    input_fingerprint: str
+    created_at: datetime
+
+    @classmethod
+    def from_row(cls, row: PedagogySelection, session_status: str) -> SelectionRead:
+        return cls(
+            id=row.id,
+            session_id=row.session_id,
+            revision=row.revision,
+            status=row.status,
+            session_status=session_status,
+            policy_version=row.policy_version,
+            registry_version=row.registry_version,
+            situation=row.situation,
+            primary_strategy=row.primary_strategy_id,
+            supporting_strategies=list(row.supporting_strategy_ids),
+            sequence=list(row.sequence),
+            success_signals=list(row.success_signals),
+            fallback_strategy=row.fallback_strategy_id,
+            rationale=row.rationale,
+            controls_teaching=row.controls_teaching,
+            production_primary_strategy=row.production_primary_strategy_id,
+            rejected=[RejectedStrategy.model_validate(item) for item in row.rejected],
+            input_fingerprint=row.input_fingerprint,
+            created_at=row.created_at,
         )
