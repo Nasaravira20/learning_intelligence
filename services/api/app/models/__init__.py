@@ -1,4 +1,6 @@
 from app.models.entities import (
+    AiModelCheck,
+    AiUsageRecord,
     AuthSession,
     LearnerProfile,
     LearningSession,
@@ -7,6 +9,8 @@ from app.models.entities import (
 )
 
 __all__ = [
+    "AiModelCheck",
+    "AiUsageRecord",
     "AuthSession",
     "LearnerProfile",
     "LearningSession",

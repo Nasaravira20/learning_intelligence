@@ -10,6 +10,7 @@ COPY app ./app
 RUN pip install --no-cache-dir ".[dev]"
 
 COPY alembic ./alembic
+COPY scripts ./scripts
 COPY tests ./tests
 
 EXPOSE 8000

@@ -79,7 +79,8 @@ def client(migrated_database: str):
     with engine.begin() as connection:
         connection.execute(
             text(
-                "TRUNCATE auth_sessions, learning_sessions, learning_topics, learner_profiles, users "
+                "TRUNCATE auth_sessions, learning_sessions, learning_topics, learner_profiles, users, "
+                "ai_usage_records, ai_model_checks "
                 "RESTART IDENTITY CASCADE"
             )
         )

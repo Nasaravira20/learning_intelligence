@@ -97,3 +97,13 @@ Copy `.env.example` when you want those values in a file. Do not commit `.env`.
 - Resume keeps the same session id and `TOPIC_SELECTED` status after the write is committed.
 - Pytest and Vitest pass.
 - `.env` is listed in `.gitignore`.
+
+## Gemini verification
+
+Gemini stays on the backend. Routine tests use the mock provider and do not call the API. A model is usable only after `scripts/check_gemini_models.py` records a successful live generation and structured-output check. The script reads `GEMINI_API_KEY` from the environment and does not print it.
+
+```powershell
+docker compose run --rm -v "${PWD}/docs:/docs" -e MODEL_STRATEGY_PATH=/docs/GEMINI_MODEL_STRATEGY.md api python scripts/check_gemini_models.py
+```
+
+The report is `docs/GEMINI_MODEL_STRATEGY.md`. Internal cost figures in that report are estimates. The hard stop is USD $20.

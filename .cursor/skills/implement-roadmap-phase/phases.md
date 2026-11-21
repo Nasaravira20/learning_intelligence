@@ -18,7 +18,7 @@ Do not start a phase until the previous phase is approved.
 
 Phase 0 acceptance: frontend and backend start, they communicate, migrations work from a clean database, health reports real status, learner records and sessions can be created, retrieved, and resumed, tests pass, no secrets are committed, and the README matches the implementation.
 
-Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 implementation waits for review of its proposal.
+Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 is approved.
 
 Later acceptance criteria stay in `AI_TEACHER_MVP_ROADMAP.md` sections 12 and 18. Do not mark a criterion done unless it was executed.
 
@@ -155,3 +155,89 @@ PRODUCT OWNER DECISION:
 [ ] Request changes
 ```
 
+# Phase 1 completion report
+
+```text
+PHASE COMPLETION REPORT
+
+Phase: 1
+Name: Gemini integration and model verification
+
+1. Implementation Summary
+- Gemini is called only from the backend provider. The web app has no model client.
+- The client uses the Interactions API, with a JSON schema in response_format, a per-call timeout, and automatic continuation turned off.
+- Routine tests use the mock provider. A model stays unusable until a live generation check and the structured check for that task are both recorded as passed.
+- Usage and estimated cost are stored in PostgreSQL. The budget guard blocks the next call at the USD $20 ceiling and at the category ceilings.
+
+2. Deliverables
+- Gemini provider
+- Provider interface
+- Mock provider
+- Model verification script
+- Model capability selection
+- docs/GEMINI_MODEL_STRATEGY.md
+- Usage tracker
+- Budget guard
+- Mock integration tests
+
+3. Files Created
+- services/api/app/ai/
+- services/api/scripts/check_gemini_models.py
+- services/api/alembic/versions/0003_ai_usage.py
+- services/api/tests/test_ai.py
+- docs/GEMINI_MODEL_STRATEGY.md
+
+4. Files Modified
+- services/api/pyproject.toml
+- services/api/Dockerfile
+- services/api/app/core/config.py
+- services/api/app/models/entities.py
+- services/api/app/models/__init__.py
+- services/api/tests/conftest.py
+- services/api/tests/test_api.py
+- docker-compose.yml
+- .env.example
+- README.md
+- AI_TEACHER_MVP_ROADMAP.md Phase 1 acceptance boxes
+
+5. Tests Executed
+- docker compose run --rm api python -m pytest
+- docker compose run --rm api python scripts/check_gemini_models.py
+
+6. Test Results
+- Passed: 35
+- Failed: 0
+- Skipped: 0
+- Live verifier exit code: 0
+- Estimated smoke spend recorded: USD 0.006348
+
+7. Acceptance Criteria
+- Passed: key is read only from backend configuration, the live key listed its models, candidate models received real generation requests, structured output is validated, access failures are classified, timeout and network failures are handled, keys are kept out of logs, usage is recorded, the budget guard blocks at the ceiling, the mock provider covers routine tests, only models that passed the live checks are usable
+- Failed: none
+- Not implemented: none
+
+8. Known Limitations
+- Cost figures are internal estimates (USD 0.50 per million input tokens and USD 3.00 per million output tokens), not a provider invoice.
+- The verifier sends generation requests to at most three text models that respond, after skipping models the key cannot access. Image, embedding, and research models are not in that default walk.
+- Teaching workflows are not started.
+
+9. API Usage
+- Model: live key, Interactions API. Passed every checked task: gemma-4-31b-it. Also usable for some tasks: gemma-4-26b-a4b-it and gemini-3.1-flash-lite.
+- Requests: 27 recorded
+- Tokens: stored on the usage rows
+- Estimated cost: USD 0.006348
+
+10. Demo Instructions
+- GEMINI_API_KEY is already in the repository .env. Do not commit that file.
+- docker compose run --rm -v "${PWD}/docs:/docs" -e MODEL_STRATEGY_PATH=/docs/GEMINI_MODEL_STRATEGY.md api python scripts/check_gemini_models.py
+- The script overwrites docs/GEMINI_MODEL_STRATEGY.md. Exit 0 means at least one model passed generation and the three structured checks.
+
+11. Remaining Issues
+- gemini-2.5-flash, gemini-2.5-pro, and gemini-2.5-flash-lite are listed but return model_not_found for this key.
+- gemma-4-26b-a4b-it did not pass the diagnostic check. gemini-3.1-flash-lite did not pass the teaching check.
+- Models further down the live list, including gemini-3.8-flash, were not sent a generation request because the verifier stops after three models that respond.
+
+PRODUCT OWNER DECISION:
+[x] Approve
+[ ] Request changes
+```

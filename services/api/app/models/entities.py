@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from decimal import Decimal
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, Text, Uuid, func
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Numeric, String, Text, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.time import utcnow
@@ -143,3 +144,56 @@ class AuthSession(Base):
     )
 
     user: Mapped[User] = relationship(back_populates="auth_sessions")
+
+
+class AiUsageRecord(Base):
+    __tablename__ = "ai_usage_records"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('succeeded', 'failed', 'blocked')",
+            name="ck_ai_usage_status",
+        ),
+        CheckConstraint(
+            "category IN ('smoke', 'development', 'teaching', 'evaluation', 'demo')",
+            name="ck_ai_usage_category",
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utcnow,
+        server_default=func.now(),
+    )
+    category: Mapped[str] = mapped_column(String(32), nullable=False)
+    task: Mapped[str] = mapped_column(String(64), nullable=False)
+    model_id: Mapped[str] = mapped_column(String(200), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False)
+    action_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    input_tokens: Mapped[int | None] = mapped_column(nullable=True)
+    output_tokens: Mapped[int | None] = mapped_column(nullable=True)
+    latency_ms: Mapped[int | None] = mapped_column(nullable=True)
+    estimated_cost_usd: Mapped[Decimal] = mapped_column(Numeric(14, 8), nullable=False, default=0)
+    error_class: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    request_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+
+
+class AiModelCheck(Base):
+    __tablename__ = "ai_model_checks"
+    __table_args__ = (
+        CheckConstraint("status IN ('passed', 'failed')", name="ck_ai_model_checks_status"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    model_id: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+    check_name: Mapped[str] = mapped_column(String(64), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False)
+    error_class: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    latency_ms: Mapped[int | None] = mapped_column(nullable=True)
+    checked_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=utcnow,
+        server_default=func.now(),
+    )

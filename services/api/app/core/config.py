@@ -1,3 +1,4 @@
+from decimal import Decimal
 from functools import lru_cache
 from urllib.parse import urlsplit
 
@@ -10,6 +11,14 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
     web_origin: str = Field(default="http://localhost:3000", alias="WEB_ORIGIN")
     cookie_secure: bool = Field(default=False, alias="COOKIE_SECURE")
+    gemini_api_key: str | None = Field(default=None, alias="GEMINI_API_KEY")
+    gemini_budget_usd: Decimal = Field(default=Decimal("20"), alias="GEMINI_BUDGET_USD")
+    gemini_timeout_seconds: float = Field(default=20, alias="GEMINI_TIMEOUT_SECONDS")
+    gemini_max_output_tokens: int = Field(default=256, alias="GEMINI_MAX_OUTPUT_TOKENS")
+    gemini_max_retries: int = Field(default=1, alias="GEMINI_MAX_RETRIES")
+    gemini_max_calls_per_action: int = Field(default=2, alias="GEMINI_MAX_CALLS_PER_ACTION")
+    gemini_model_candidates: str = Field(default="", alias="GEMINI_MODEL_CANDIDATES")
+    gemini_verify_limit: int = Field(default=3, alias="GEMINI_VERIFY_LIMIT")
     app_name: str = "ai-teacher-api"
 
     model_config = SettingsConfigDict(
@@ -38,6 +47,28 @@ class Settings(BaseSettings):
     @classmethod
     def strip_origin(cls, value: str) -> str:
         return value.rstrip("/")
+
+    @field_validator("gemini_api_key")
+    @classmethod
+    def blank_key_is_missing(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        cleaned = value.strip()
+        return cleaned or None
+
+    @field_validator("gemini_max_output_tokens")
+    @classmethod
+    def limit_output_tokens(cls, value: int) -> int:
+        if value < 16 or value > 1024:
+            raise ValueError("GEMINI_MAX_OUTPUT_TOKENS must be between 16 and 1024.")
+        return value
+
+    @field_validator("gemini_max_retries")
+    @classmethod
+    def limit_retries(cls, value: int) -> int:
+        if value < 0 or value > 1:
+            raise ValueError("GEMINI_MAX_RETRIES must be 0 or 1.")
+        return value
 
 
 @lru_cache

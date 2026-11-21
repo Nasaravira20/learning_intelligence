@@ -25,6 +25,9 @@ services:
       DATABASE_URL: postgresql+psycopg://ai_teacher:ai_teacher@db:5432/ai_teacher
       LOG_LEVEL: INFO
       WEB_ORIGIN: http://localhost:3000
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_BUDGET_USD: ${GEMINI_BUDGET_USD:-20}
+      GEMINI_MODEL_CANDIDATES: ${GEMINI_MODEL_CANDIDATES:-}
     ports:
       - "8000:8000"
     depends_on:

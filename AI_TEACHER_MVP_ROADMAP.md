@@ -1054,17 +1054,17 @@ Verify which models are actually accessible with the configured Gemini API key a
 
 ## Acceptance Tests
 
-- [ ] API key is read only from backend configuration.
-- [ ] Available model information is retrieved.
-- [ ] Candidate models undergo actual generation tests.
-- [ ] Structured output is validated.
-- [ ] Model access failures are clearly classified.
-- [ ] Timeout and network failures are handled.
-- [ ] API keys never appear in logs.
-- [ ] Usage is recorded.
-- [ ] Budget guard blocks requests after the internal limit.
-- [ ] Mock provider supports routine tests.
-- [ ] Only verified models are marked as usable.
+- [x] API key is read only from backend configuration.
+- [x] Available model information is retrieved.
+- [x] Candidate models undergo actual generation tests.
+- [x] Structured output is validated.
+- [x] Model access failures are clearly classified.
+- [x] Timeout and network failures are handled.
+- [x] API keys never appear in logs.
+- [x] Usage is recorded.
+- [x] Budget guard blocks requests after the internal limit.
+- [x] Mock provider supports routine tests.
+- [x] Only verified models are marked as usable.
 
 ## Phase Gate
 
