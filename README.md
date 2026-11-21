@@ -6,7 +6,7 @@ A session starts in `TOPIC_SELECTED`. Diagnosis moves it to `DIAGNOSING`, a lear
 
 A signed-in learner has a private record: profile, goals, preferences, topic knowledge, misconceptions, assessment history, and learning activities. Observed knowledge was demonstrated. Inferred knowledge is an estimate or a self-report, and a correction does not turn it into an observation. Session history is `GET /api/sessions/{session_id}/history`.
 
-Open http://localhost:3000 for the landing page. Create an account, then continue in Teacher Mode. Sign-in uses an HttpOnly cookie. Passwords are stored as bcrypt hashes and are not written to logs. A signed-in learner only sees their own sessions.
+Open http://localhost:3000 for the landing page. Create an account, then continue in Teacher Mode. Sign-in uses an HttpOnly cookie. Passwords are stored as bcrypt hashes and are not written to logs. A signed-in learner only sees their own sessions. `DELETE /api/auth/account` removes that account, the private learner record, and the cookie. The email can be registered again. Topics are shared and are not removed with the account.
 
 ## Run the stack
 
@@ -42,6 +42,8 @@ Failed responses use one envelope:
 ```
 
 The same request ID is returned in the `X-Request-ID` header. Validation errors add a `details` array of `field` and `message`. `/health` returns `{"status":"ok","database":"ok"}` only when PostgreSQL answers. If the database is down, it returns `503` with code `database_unavailable`.
+
+The API tests also drop the `ai_teacher_test` schema and apply every migration from empty before the suite runs. That is the clean-database check for this stack.
 
 ## Tests
 

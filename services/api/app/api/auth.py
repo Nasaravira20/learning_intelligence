@@ -36,6 +36,13 @@ def signout(request: Request, response: Response, db: Session = Depends(get_db))
     return {"status": "signed_out"}
 
 
+@router.delete("/account")
+def delete_account(response: Response, db: Session = Depends(get_db), user: User = Depends(require_user)) -> dict[str, str]:
+    auth_service.delete_account(db, user)
+    clear_session_cookie(response)
+    return {"status": "deleted"}
+
+
 @router.get("/me", response_model=AccountRead)
 def me(user: User = Depends(require_user)) -> AccountRead:
     return auth_service.to_account(user)

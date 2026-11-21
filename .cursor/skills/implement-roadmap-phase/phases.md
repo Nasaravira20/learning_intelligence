@@ -20,7 +20,7 @@ Phase 0 acceptance: frontend and backend start, they communicate, migrations wor
 
 Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 is approved.
 
-Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is approved. The product owner approved starting Phase 6 on 2026-11-21. Phase 6 is approved. The product owner approved starting Phase 7 on 2026-11-21. Phase 7 is approved. The product owner approved starting Phase 8 on 2026-11-21. Phase 8 is approved. The product owner approved starting Phase 9 on 2026-11-21. Phase 9 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 10 until the product owner approves the Phase 9 report.
+Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is approved. The product owner approved starting Phase 5 on 2026-11-21. Phase 5 is approved. The product owner approved starting Phase 6 on 2026-11-21. Phase 6 is approved. The product owner approved starting Phase 7 on 2026-11-21. Phase 7 is approved. The product owner approved starting Phase 8 on 2026-11-21. Phase 8 is approved. The product owner approved starting Phase 9 on 2026-11-21. Phase 9 is approved. The product owner approved starting Phase 10 on 2026-11-21. Phase 10 is implemented. Acceptance tests passed on 2026-11-21. Human evaluation and a controlled pilot were not conducted. Do not treat the product as pilot-complete.
 
 Later acceptance criteria stay in `AI_TEACHER_MVP_ROADMAP.md` sections 12 and 18. Do not mark a criterion done unless it was executed.
 
@@ -1018,7 +1018,90 @@ Name: Retention and Learning Progress
 - When that date arrives, Start review asks for the same objective. A partial answer returns the session to Remediation. Resume keeps an open review.
 
 11. Remaining Issues
-- None that block the retention gate. Do not start Phase 10 until this report is approved.
+- None that block the retention gate. The product owner approved starting Phase 10 on 2026-11-21.
+
+PRODUCT OWNER DECISION:
+[x] Approve
+[ ] Request changes
+```
+
+# Phase 10 completion report
+
+```text
+PHASE COMPLETION REPORT
+
+Phase: 10
+Name: End-to-End Validation and Pilot Release
+
+1. Implementation Summary
+- One mock journey signs up a learner, diagnoses two chained objectives, plans the unmet prerequisite, teaches the selected strategy, resumes the lesson, remediates a partial answer with a different strategy, records mastery, completes a delayed recall, and deletes the account.
+- A three-case benchmark file fails the suite if selector, evaluation, or retention-timezone decisions drift. Production strategy selection stays empty.
+- DELETE /api/auth/account removes the user and private learner rows and clears the cookie. Shared topics stay.
+- No live Gemini call was made. Human evaluation and a controlled pilot were not conducted.
+
+2. Deliverables
+- End-to-end test suite
+- AI and strategy benchmark report
+- Cost and latency note
+- Security checklist
+- Deployment note
+- Human evaluation record (not conducted)
+- Pilot record (not conducted)
+- All of the above are in docs/PHASE10_VALIDATION.md
+
+3. Files Created
+- services/api/tests/test_journey.py
+- services/api/tests/ai/benchmark_cases.json
+- services/api/tests/ai/test_benchmark_regression.py
+- docs/PHASE10_VALIDATION.md
+
+4. Files Modified
+- services/api/app/services/auth.py
+- services/api/app/api/auth.py
+- README.md
+- AI_TEACHER_MVP_ROADMAP.md
+- .cursor/skills/implement-roadmap-phase/phases.md
+
+5. Tests Executed
+- Exact commands:
+- docker compose run --rm --build api python -m pytest
+  (working directory: repository root)
+- docker compose run --rm --build api python -m pytest tests/test_journey.py
+  (working directory: repository root; confirms the 60 second journey bound)
+- npm test
+  (working directory: apps/web)
+- npx tsc --noEmit
+  (working directory: apps/web)
+
+6. Test Results
+- API suite: 110 passed, 0 failed, 0 skipped, in 99.86s. That run was before the journey timer line.
+- Journey bound: docker compose run --rm --build api python -m pytest tests/test_journey.py -q passed, exit 0. The test asserts the journey finishes in under 60 seconds.
+- Web: 16 passed, 0 failed, 0 skipped, 5 files. npx tsc --noEmit exited 0.
+
+7. Acceptance Criteria
+- Passed: A new learner can complete the full learning journey. An unfinished session can be resumed. Diagnostics influence the learning plan. Learning plans influence teaching. Pedagogy selection influences actual teaching activities. Evaluation changes subsequent workflow behavior. Retention assessments can be completed. Learning progress persists. API budget protection works. Authentication and authorization are tested. Privacy and deletion requirements are tested. AI benchmark regressions are detected. Deployment instructions work from a clean environment, on this machine's Docker stack, by dropping the test schema and migrating from empty.
+- Failed: none
+- Not implemented: Human evaluation. Controlled pilot. Sample size 0 for both. docs/PHASE10_VALIDATION.md records that. P0 registry entries remain pending_human_review.
+
+8. Known Limitations
+- The journey uses the development mock. It does not measure live model latency or teaching quality.
+- The 60 second bound is a hang check on the local mock stack.
+- The clean migration ran in the API test fixture. It was not repeated on a second machine.
+- Registry review, human evaluation, and a pilot still require a person. This phase made no live Gemini calls. Cost is USD 0.
+
+9. API Usage
+- Model: none
+- Requests: 0
+- Tokens: 0
+- Estimated cost: USD 0
+
+10. Demo Instructions
+- From the repository root: docker compose up --build
+- Sign in and open /learn. The page is unchanged in this phase.
+- Account removal is DELETE /api/auth/account while signed in. There is no delete button on the page.
+
+11. Remaining Issues
+- A person has not reviewed the registry, compared teaching or evaluation quality, or run a pilot. Do not mark those done.
 
 PRODUCT OWNER DECISION:
 [ ] Approve

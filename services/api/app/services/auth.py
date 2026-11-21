@@ -4,7 +4,7 @@ import logging
 from datetime import timedelta
 from uuid import UUID, uuid4
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
@@ -80,6 +80,13 @@ def open_auth_session(session: Session, user_id: UUID) -> str:
     session.flush()
     log_event(logger, logging.INFO, "auth_session_opened", user_id=user_id)
     return token
+
+
+def delete_account(session: Session, user: User) -> None:
+    user_id = user.id
+    session.execute(delete(User).where(User.id == user_id))
+    session.flush()
+    log_event(logger, logging.INFO, "account_deleted", user_id=user_id)
 
 
 def revoke_auth_session(session: Session, token: str) -> None:

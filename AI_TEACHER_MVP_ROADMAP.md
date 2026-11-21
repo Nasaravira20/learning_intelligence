@@ -1536,19 +1536,19 @@ Validate that the complete product actually improves learning.
 
 ## Acceptance Tests
 
-- [ ] A new learner can complete the full learning journey.
-- [ ] An unfinished session can be resumed.
-- [ ] Diagnostics influence the learning plan.
-- [ ] Learning plans influence teaching.
-- [ ] Pedagogy selection influences actual teaching activities.
-- [ ] Evaluation changes subsequent workflow behavior.
-- [ ] Retention assessments can be completed.
-- [ ] Learning progress persists.
-- [ ] API budget protection works.
-- [ ] Authentication and authorization are tested.
-- [ ] Privacy and deletion requirements are tested.
-- [ ] AI benchmark regressions are detected.
-- [ ] Deployment instructions work from a clean environment.
+- [x] A new learner can complete the full learning journey.
+- [x] An unfinished session can be resumed.
+- [x] Diagnostics influence the learning plan.
+- [x] Learning plans influence teaching.
+- [x] Pedagogy selection influences actual teaching activities.
+- [x] Evaluation changes subsequent workflow behavior.
+- [x] Retention assessments can be completed.
+- [x] Learning progress persists.
+- [x] API budget protection works.
+- [x] Authentication and authorization are tested.
+- [x] Privacy and deletion requirements are tested.
+- [x] AI benchmark regressions are detected.
+- [x] Deployment instructions work from a clean environment.
 
 ---
 
@@ -1984,48 +1984,48 @@ The AI Teacher MVP is complete only when all the following are demonstrated.
 
 ## Learner Intelligence
 
-- [ ] Learners can create and resume learning journeys.
-- [ ] Learner knowledge and history persist.
-- [ ] Observed and inferred knowledge are distinguishable.
+- [x] Learners can create and resume learning journeys.
+- [x] Learner knowledge and history persist.
+- [x] Observed and inferred knowledge are distinguishable.
 
 ## Diagnosis and Planning
 
-- [ ] The system diagnoses knowledge gaps.
-- [ ] Misconceptions have supporting evidence.
-- [ ] Learning plans respect prerequisites.
-- [ ] Learning plans adapt to new evidence.
+- [x] The system diagnoses knowledge gaps.
+- [x] Misconceptions have supporting evidence.
+- [x] Learning plans respect prerequisites.
+- [x] Learning plans adapt to new evidence.
 
 ## Pedagogy
 
 - [ ] P0 strategies have validated registry entries.
-- [ ] Strategies have source references and limitations.
-- [ ] The selector uses learner context.
-- [ ] The selector avoids ineligible strategies.
-- [ ] Strategy selection is auditable.
+- [x] Strategies have source references and limitations.
+- [x] The selector uses learner context.
+- [x] The selector avoids ineligible strategies.
+- [x] Strategy selection is auditable.
 
 ## Teaching and Evaluation
 
-- [ ] Teaching executes selected strategies.
-- [ ] Learners receive structured activities.
-- [ ] Evaluation assesses reasoning and application.
-- [ ] The system changes strategy when learners struggle.
-- [ ] Mastery decisions use sufficient evidence.
+- [x] Teaching executes selected strategies.
+- [x] Learners receive structured activities.
+- [x] Evaluation assesses reasoning and application.
+- [x] The system changes strategy when learners struggle.
+- [x] Mastery decisions use sufficient evidence.
 
 ## Retention
 
-- [ ] Revision can be scheduled.
-- [ ] Delayed assessments can be completed.
-- [ ] Mastery and retention history persist.
+- [x] Revision can be scheduled.
+- [x] Delayed assessments can be completed.
+- [x] Mastery and retention history persist.
 
 ## Engineering
 
-- [ ] Gemini access is verified.
-- [ ] API usage and costs are tracked.
-- [ ] The $20 internal budget ceiling is enforced.
-- [ ] Automated tests pass.
-- [ ] End-to-end tests pass.
-- [ ] Security and privacy requirements are tested.
-- [ ] Documentation is complete.
+- [x] Gemini access is verified.
+- [x] API usage and costs are tracked.
+- [x] The $20 internal budget ceiling is enforced.
+- [x] Automated tests pass.
+- [x] End-to-end tests pass.
+- [x] Security and privacy requirements are tested.
+- [x] Documentation is complete.
 - [ ] A controlled pilot has been conducted.
 
 ---

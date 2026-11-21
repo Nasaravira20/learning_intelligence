@@ -1,0 +1,51 @@
+{
+  "sample_size": 3,
+  "note": "Fixed cases for regression detection. They are not a measure of teaching effectiveness.",
+  "selector": [
+    {
+      "id": "missing_prerequisites",
+      "input": {
+        "topic": "Backpropagation",
+        "learning_objective": "chain-rule.apply",
+        "learner_level": "beginner",
+        "prior_knowledge": [],
+        "knowledge_gaps": ["chain-rule.apply"],
+        "misconceptions": [],
+        "recent_performance": [],
+        "session_stage": "initial_teaching",
+        "time_available_minutes": 20,
+        "previous_strategy_outcomes": []
+      },
+      "expect_situation": "missing_prerequisites",
+      "expect_primary": "small_step_instruction",
+      "expect_supporting_includes": ["concrete_examples", "worked_examples"],
+      "expect_production_primary": null
+    }
+  ],
+  "evaluation": [
+    {
+      "id": "correct_answer_weak_reasoning",
+      "judgment": {
+        "objective_code": "chain-rule.apply",
+        "answer_verdict": "correct",
+        "reasoning_verdict": "weak",
+        "understanding": "partial",
+        "confidence": "medium",
+        "misconception": null
+      },
+      "expect_decision": "further_assessment"
+    }
+  ],
+  "retention": [
+    {
+      "id": "kolkata_midnight",
+      "learned_at": "2026-11-21T18:30:00+00:00",
+      "zone": "Asia/Kolkata",
+      "expect_due_on": "2026-11-23",
+      "before": "2026-11-22T18:29:00+00:00",
+      "expect_before": "scheduled",
+      "after": "2026-11-22T18:30:00+00:00",
+      "expect_after": "due"
+    }
+  ]
+}
