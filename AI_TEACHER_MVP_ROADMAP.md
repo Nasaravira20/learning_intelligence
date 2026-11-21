@@ -1200,13 +1200,13 @@ Create prerequisite-aware personalized learning plans.
 
 ## Acceptance Tests
 
-- [ ] Every learning step has an objective.
-- [ ] Prerequisites are respected.
-- [ ] Missing prerequisite knowledge changes the starting point.
-- [ ] Concepts are not skipped without supporting evidence.
-- [ ] Invalid dependency cycles are detected.
-- [ ] Plan progress is persisted.
-- [ ] Plans can be revised after new diagnostic evidence.
+- [x] Every learning step has an objective.
+- [x] Prerequisites are respected.
+- [x] Missing prerequisite knowledge changes the starting point.
+- [x] Concepts are not skipped without supporting evidence.
+- [x] Invalid dependency cycles are detected.
+- [x] Plan progress is persisted.
+- [x] Plans can be revised after new diagnostic evidence.
 
 ## Phase Gate
 

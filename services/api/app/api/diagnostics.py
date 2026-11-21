@@ -9,7 +9,7 @@ from app.core.errors import NotFoundError
 from app.db.session import get_db
 from app.diagnostics import service as diagnostics
 from app.models import User
-from app.schemas.diagnostics import DiagnosisReport, ObjectiveCreate, ObjectiveRead, ResponseBatch
+from app.schemas.diagnostics import DiagnosisReport, ObjectiveCreate, ObjectiveRead, PrerequisiteCreate, ResponseBatch
 from app.services import sessions as session_service
 
 topics = APIRouter(prefix="/topics", tags=["diagnostics"])
@@ -44,6 +44,18 @@ def post_objective(
     return diagnostics.create_objective(db, topic_id, payload)
 
 
+@topics.post("/{topic_id}/objectives/{objective_id}/prerequisites", response_model=ObjectiveRead)
+def post_prerequisite(
+    topic_id: UUID,
+    objective_id: UUID,
+    payload: PrerequisiteCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_user),
+) -> ObjectiveRead:
+    del user
+    return diagnostics.add_prerequisite(db, topic_id, objective_id, payload.prerequisite_code)
+
+
 @sessions.post("/{session_id}/diagnosis", response_model=DiagnosisReport, status_code=201)
 def post_diagnosis(
     session_id: UUID,
@@ -53,6 +65,17 @@ def post_diagnosis(
 ) -> DiagnosisReport:
     item = _owned_session(db, user, session_id)
     return diagnostics.start_diagnosis(db, provider, item)
+
+
+@sessions.post("/{session_id}/diagnosis/follow-up", response_model=DiagnosisReport, status_code=201)
+def post_follow_up(
+    session_id: UUID,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_user),
+    provider: ModelProvider = Depends(get_model_provider),
+) -> DiagnosisReport:
+    item = _owned_session(db, user, session_id)
+    return diagnostics.start_follow_up(db, provider, item)
 
 
 @sessions.get("/{session_id}/diagnosis", response_model=DiagnosisReport)

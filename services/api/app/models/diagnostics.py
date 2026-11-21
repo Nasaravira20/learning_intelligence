@@ -74,7 +74,6 @@ class DiagnosticAttempt(Base):
             "confidence IS NULL OR (confidence >= 0 AND confidence <= 1)",
             name="ck_diagnostic_attempts_confidence",
         ),
-        UniqueConstraint("session_id", name="uq_diagnostic_attempts_session_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)

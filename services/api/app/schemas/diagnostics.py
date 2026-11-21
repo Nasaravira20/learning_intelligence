@@ -53,6 +53,17 @@ class ObjectiveRead(BaseModel):
     created_at: datetime
 
 
+class PrerequisiteCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    prerequisite_code: str = Field(min_length=1, max_length=64)
+
+    @field_validator("prerequisite_code")
+    @classmethod
+    def clean_code(cls, value: str) -> str:
+        return _required(value, "A prerequisite code is required.")
+
+
 class ResponseInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

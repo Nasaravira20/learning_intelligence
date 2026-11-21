@@ -4,10 +4,13 @@ import { FormEvent, useEffect, useState } from "react";
 
 import {
   DiagnosisReport,
+  LearningObjectiveRecord,
   LearningSession,
   UiError,
+  addObjectivePrerequisite,
   createLearningObjective,
   getDiagnosis,
+  listLearningObjectives,
   startDiagnosis,
   submitDiagnosis,
   toUiError,
@@ -15,23 +18,47 @@ import {
 
 export function DiagnosticPanel({
   session,
+  refreshKey,
   onSession,
 }: {
   session: LearningSession;
+  refreshKey: number;
   onSession: (session: LearningSession) => void;
 }) {
   const [report, setReport] = useState<DiagnosisReport | null>(null);
+  const [objectives, setObjectives] = useState<LearningObjectiveRecord[]>([]);
   const [error, setError] = useState<UiError | null>(null);
   const [pending, setPending] = useState(false);
-  const [needObjectives, setNeedObjectives] = useState(false);
   const [code, setCode] = useState("");
   const [statement, setStatement] = useState("");
   const [concept, setConcept] = useState("");
   const [prerequisites, setPrerequisites] = useState("");
+  const [links, setLinks] = useState<Record<string, string>>({});
   const [answers, setAnswers] = useState<Record<string, { answer: string; reasoning: string }>>({});
 
   useEffect(() => {
-    if (session.status !== "DIAGNOSING") {
+    if (session.status !== "TOPIC_SELECTED") {
+      return;
+    }
+    let active = true;
+    listLearningObjectives(session.topic_id)
+      .then((rows) => {
+        if (active) {
+          setObjectives(rows);
+        }
+      })
+      .catch((caught) => {
+        if (active) {
+          setError(toUiError(caught));
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [session.topic_id, session.status, refreshKey]);
+
+  useEffect(() => {
+    if (session.status !== "DIAGNOSING" && session.status !== "PLAN_READY") {
       return;
     }
     let active = true;
@@ -43,17 +70,19 @@ export function DiagnosticPanel({
       })
       .catch((caught) => {
         if (active) {
-          setError(toUiError(caught));
+          const uiError = toUiError(caught);
+          if (uiError.code !== "diagnosis_not_found") {
+            setError(uiError);
+          }
         }
       });
     return () => {
       active = false;
     };
-  }, [session.id, session.status]);
+  }, [session.id, session.status, refreshKey]);
 
   function applyReport(next: DiagnosisReport) {
     setReport(next);
-    setNeedObjectives(false);
     onSession({ ...session, status: next.session_status });
   }
 
@@ -63,13 +92,7 @@ export function DiagnosticPanel({
     try {
       applyReport(await startDiagnosis(session.id));
     } catch (caught) {
-      const uiError = toUiError(caught);
-      if (uiError.code === "objectives_required") {
-        setNeedObjectives(true);
-        setError(uiError);
-      } else {
-        setError(uiError);
-      }
+      setError(toUiError(caught));
     } finally {
       setPending(false);
     }
@@ -105,7 +128,27 @@ export function DiagnosticPanel({
       setStatement("");
       setConcept("");
       setPrerequisites("");
-      applyReport(await startDiagnosis(session.id));
+      setObjectives(await listLearningObjectives(session.topic_id));
+    } catch (caught) {
+      setError(toUiError(caught));
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function onLink(event: FormEvent, objectiveId: string) {
+    event.preventDefault();
+    const prerequisiteCode = (links[objectiveId] ?? "").trim();
+    if (!prerequisiteCode) {
+      setError({ code: "validation_error", message: "Enter a prerequisite code.", requestId: null });
+      return;
+    }
+    setError(null);
+    setPending(true);
+    try {
+      await addObjectivePrerequisite(session.topic_id, objectiveId, prerequisiteCode);
+      setLinks((current) => ({ ...current, [objectiveId]: "" }));
+      setObjectives(await listLearningObjectives(session.topic_id));
     } catch (caught) {
       setError(toUiError(caught));
     } finally {
@@ -146,17 +189,48 @@ export function DiagnosticPanel({
           <p className="mt-1 text-rose-800">Code: {error.code}</p>
         </div>
       ) : null}
-      {session.status === "TOPIC_SELECTED" && report === null ? (
-        <button
-          type="button"
-          onClick={onStart}
-          disabled={pending}
-          className="w-fit rounded border border-stone-400 px-3 py-2 text-sm disabled:opacity-50"
-        >
-          Start diagnosis
-        </button>
+      {session.status === "TOPIC_SELECTED" ? (
+        <div className="grid gap-3">
+          {objectives.length > 0 ? (
+            <ul className="grid gap-2 text-sm">
+              {objectives.map((objective) => (
+                <li key={objective.id} className="rounded border border-stone-200 px-3 py-2">
+                  <p className="font-medium">
+                    {objective.code} · {objective.concept}
+                  </p>
+                  <p>{objective.statement}</p>
+                  <p className="text-stone-600">
+                    Prerequisites: {objective.prerequisite_codes.length > 0 ? objective.prerequisite_codes.join(", ") : "none"}
+                  </p>
+                  <form onSubmit={(event) => onLink(event, objective.id)} className="mt-2 flex flex-wrap gap-2">
+                    <label className="text-stone-700" htmlFor={`link-${objective.id}`}>
+                      Prerequisite code
+                      <input
+                        id={`link-${objective.id}`}
+                        value={links[objective.id] ?? ""}
+                        onChange={(event) => setLinks((current) => ({ ...current, [objective.id]: event.target.value }))}
+                        className="ml-2 rounded border border-stone-300 px-2 py-1 font-mono"
+                      />
+                    </label>
+                    <button type="submit" disabled={pending} className="rounded border border-stone-400 px-2 py-1 disabled:opacity-50">
+                      Add prerequisite
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <button
+            type="button"
+            onClick={onStart}
+            disabled={pending}
+            className="w-fit rounded border border-stone-400 px-3 py-2 text-sm disabled:opacity-50"
+          >
+            Start diagnosis
+          </button>
+        </div>
       ) : null}
-      {needObjectives ? (
+      {session.status === "TOPIC_SELECTED" ? (
         <form onSubmit={onObjective} className="grid gap-2 rounded border border-stone-200 p-3">
           <h3 className="text-sm font-semibold">Learning objective</h3>
           <label className="text-sm text-stone-700" htmlFor={`objective-code-${session.id}`}>
@@ -200,7 +274,7 @@ export function DiagnosticPanel({
             />
           </label>
           <button type="submit" disabled={pending} className="w-fit rounded bg-stone-900 px-3 py-2 text-sm text-white disabled:opacity-50">
-            Save objective and start
+            Save objective
           </button>
         </form>
       ) : null}

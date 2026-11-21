@@ -94,6 +94,24 @@ def enter_diagnosis(session: Session, item: LearningSession) -> LearningSession:
     return item
 
 
+def enter_plan(session: Session, item: LearningSession) -> LearningSession:
+    if item.status == "PLAN_READY":
+        return item
+    if item.status != "DIAGNOSING":
+        raise AppError("invalid_transition", "This session cannot open a learning plan.", 409)
+    item.status = "PLAN_READY"
+    item.updated_at = utcnow()
+    session.flush()
+    log_event(
+        logger,
+        logging.INFO,
+        "session_status_changed",
+        session_id=item.id,
+        status=item.status,
+    )
+    return item
+
+
 def resume_session(session: Session, session_id: UUID) -> LearningSession:
     item = get_session(session, session_id)
     now = utcnow()

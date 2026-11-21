@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import re
 from decimal import Decimal
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -30,6 +30,7 @@ from app.diagnostics.policy import (
 )
 from app.diagnostics.prompts import judgment_prompt, question_prompt
 from app.diagnostics.schemas import ItemJudgment, JudgmentSet, QuestionSet
+from app.planner.graph import learning_order
 from app.models import LearningSession
 from app.models.diagnostics import (
     DiagnosticAttempt,
@@ -146,6 +147,43 @@ def create_objective(session: Session, topic_id: UUID, payload: ObjectiveCreate)
     return _objective_read(row, [_code(item) for item in payload.prerequisite_codes])
 
 
+def add_prerequisite(session: Session, topic_id: UUID, objective_id: UUID, prerequisite_code: str) -> ObjectiveRead:
+    get_topic(session, topic_id)
+    code = _code(prerequisite_code)
+    rows = _objectives(session, topic_id)
+    target = next((row for row in rows if row.id == objective_id), None)
+    if target is None:
+        raise NotFoundError("objective_not_found", "Learning objective was not found.")
+    if code == target.code:
+        raise AppError("validation_error", "An objective cannot be its own prerequisite.", 422)
+    by_code = {row.code: row for row in rows}
+    if code not in by_code:
+        raise AppError("prerequisite_not_found", "A prerequisite objective must already exist on this topic.", 422)
+    prerequisites = _prerequisite_map(session, [row.id for row in rows])
+    current_codes = prerequisites.get(target.id, [])
+    if code in current_codes:
+        raise ConflictError("prerequisite_exists", "That prerequisite is already linked.")
+    proposed: list[ObjectiveNode] = []
+    for node in _nodes(rows, prerequisites):
+        if node.code == target.code:
+            proposed.append(
+                ObjectiveNode(
+                    code=node.code,
+                    concept=node.concept,
+                    statement=node.statement,
+                    position=node.position,
+                    prerequisite_codes=node.prerequisite_codes + (code,),
+                )
+            )
+        else:
+            proposed.append(node)
+    learning_order(proposed)
+    session.add(ObjectivePrerequisite(objective_id=target.id, prerequisite_id=by_code[code].id))
+    session.flush()
+    log_event(logger, logging.INFO, "prerequisite_linked", topic_id=topic_id, objective_id=target.id)
+    return _objective_read(target, current_codes + [code])
+
+
 def list_objective_reads(session: Session, topic_id: UUID) -> list[ObjectiveRead]:
     get_topic(session, topic_id)
     rows = _objectives(session, topic_id)
@@ -167,7 +205,12 @@ def _objective_read(row: LearningObjective, prerequisite_codes: list[str]) -> Ob
 
 
 def _attempt_for_session(session: Session, learning_session: LearningSession) -> DiagnosticAttempt | None:
-    return session.scalar(select(DiagnosticAttempt).where(DiagnosticAttempt.session_id == learning_session.id))
+    return session.scalar(
+        select(DiagnosticAttempt)
+        .where(DiagnosticAttempt.session_id == learning_session.id)
+        .order_by(DiagnosticAttempt.created_at.desc(), DiagnosticAttempt.id.desc())
+        .limit(1)
+    )
 
 
 def _complete_model(session: Session, provider: ModelProvider, task: str, prompt: str, output_model: type, action_id: str):
@@ -204,10 +247,12 @@ def _complete_model(session: Session, provider: ModelProvider, task: str, prompt
         raise AppError("malformed_output", "The model output did not match the required schema.", 422) from None
 
 
-def start_diagnosis(session: Session, provider: ModelProvider, learning_session: LearningSession) -> DiagnosisReport:
-    current = _attempt_for_session(session, learning_session)
-    if current is not None:
-        return report_for(session, learning_session, current)
+def _validated_question_set(
+    session: Session,
+    provider: ModelProvider,
+    learning_session: LearningSession,
+    action_id: str,
+) -> tuple[list[LearningObjective], QuestionSet]:
     rows = _objectives(session, learning_session.topic_id)
     if not rows:
         raise AppError("objectives_required", "Define at least one learning objective before a diagnosis.", 422)
@@ -216,18 +261,25 @@ def start_diagnosis(session: Session, provider: ModelProvider, learning_session:
     prerequisites = _prerequisite_map(session, [row.id for row in rows])
     nodes = _nodes(rows, prerequisites)
     observed = _observed_concepts(session, learning_session.learner_id, learning_session.topic_id)
-    prompt = question_prompt(nodes, observed)
     parsed = _complete_model(
         session,
         provider,
         "diagnostic",
-        prompt,
+        question_prompt(nodes, observed),
         QuestionSet,
-        f"diagnosis-questions:{learning_session.id}",
+        action_id,
     )
     assert isinstance(parsed, QuestionSet)
     align_questions(nodes, parsed.questions)
-    enter_diagnosis(session, learning_session)
+    return rows, parsed
+
+
+def _store_questions(
+    session: Session,
+    learning_session: LearningSession,
+    rows: list[LearningObjective],
+    parsed: QuestionSet,
+) -> DiagnosticAttempt:
     attempt = DiagnosticAttempt(
         session_id=learning_session.id,
         learner_id=learning_session.learner_id,
@@ -261,6 +313,39 @@ def start_diagnosis(session: Session, provider: ModelProvider, learning_session:
         attempt_id=attempt.id,
         objective_count=len(rows),
     )
+    return attempt
+
+
+def start_diagnosis(session: Session, provider: ModelProvider, learning_session: LearningSession) -> DiagnosisReport:
+    current = _attempt_for_session(session, learning_session)
+    if current is not None:
+        return report_for(session, learning_session, current)
+    rows, parsed = _validated_question_set(
+        session,
+        provider,
+        learning_session,
+        f"diagnosis-questions:{learning_session.id}",
+    )
+    enter_diagnosis(session, learning_session)
+    attempt = _store_questions(session, learning_session, rows, parsed)
+    return report_for(session, learning_session, attempt)
+
+
+def start_follow_up(session: Session, provider: ModelProvider, learning_session: LearningSession) -> DiagnosisReport:
+    if learning_session.status != "PLAN_READY":
+        raise AppError("invalid_transition", "A follow-up diagnosis starts after a learning plan.", 409)
+    current = _attempt_for_session(session, learning_session)
+    if current is None:
+        raise NotFoundError("diagnosis_not_found", "This session has no diagnosis.")
+    if current.status != "completed":
+        raise ConflictError("diagnosis_open", "Finish the current diagnosis before starting another.")
+    rows, parsed = _validated_question_set(
+        session,
+        provider,
+        learning_session,
+        f"diagnosis-follow-up:{uuid4()}",
+    )
+    attempt = _store_questions(session, learning_session, rows, parsed)
     return report_for(session, learning_session, attempt)
 
 

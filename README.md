@@ -2,7 +2,7 @@
 
 Phase 0 is a local learning-session shell. The browser talks to Next.js, Next.js proxies to FastAPI, and FastAPI stores learners, topics, and sessions in PostgreSQL.
 
-A session is created in `TOPIC_SELECTED` and stays there. Resume reloads that saved session and records when it was resumed. Diagnosis, teaching, and pedagogy begin in later phases.
+A session starts in `TOPIC_SELECTED`. Diagnosis moves it to `DIAGNOSING`, and a learning plan moves it to `PLAN_READY`. Resume reloads that saved session and records when it was resumed. Teaching and pedagogy begin in later phases.
 
 A signed-in learner has a private record: profile, goals, preferences, topic knowledge, misconceptions, assessment history, and learning activities. Observed knowledge was demonstrated. Inferred knowledge is an estimate or a self-report, and a correction does not turn it into an observation. Session history is `GET /api/sessions/{session_id}/history`.
 
@@ -119,3 +119,9 @@ Open http://localhost:3000/learn after signing in. The page saves a display name
 A signed-in learner can add learning objectives to a topic, including prerequisite codes that already exist on that topic, then start a diagnosis from a saved session. The session moves from topic selected to diagnosing. Questions have to use those objective codes. Answers and reasoning are judged separately. A completed report stores the starting point, confidence, and any misconception evidence copied from the learner's own response. Uncertain judgments stay unconfirmed.
 
 Local diagnosis uses `AI_PROVIDER=mock` and does not call Gemini. Set `AI_PROVIDER=gemini` only for a live check after a model has passed `scripts/check_gemini_models.py` for the diagnostic task. Routine tests keep the mock provider.
+
+## Learning plan
+
+After a diagnosis is complete, build a learning plan from the same session. The plan orders every objective by its prerequisites, gives each step that objective's completion criteria, and starts at the first step that does not yet have observed diagnostic evidence. A partial or uncertain answer does not skip a concept. Adding a prerequisite that would create a cycle is rejected. A later diagnostic follow-up can revise the plan; the previous revision stays stored and the active plan is the one shown on `/learn`. The session status becomes plan ready. Teaching does not start in this phase.
+
+The sequence is computed in the API. Routine tests keep `AI_PROVIDER=mock` and do not call Gemini.

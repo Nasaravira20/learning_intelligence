@@ -525,3 +525,68 @@ export function submitDiagnosis(
     body: JSON.stringify({ responses }),
   });
 }
+
+export function listLearningObjectives(topicId: string): Promise<LearningObjectiveRecord[]> {
+  return apiRequest<LearningObjectiveRecord[]>(`/api/topics/${topicId}/objectives`);
+}
+
+export function addObjectivePrerequisite(topicId: string, objectiveId: string, prerequisiteCode: string): Promise<LearningObjectiveRecord> {
+  return apiRequest<LearningObjectiveRecord>(`/api/topics/${topicId}/objectives/${objectiveId}/prerequisites`, {
+    method: "POST",
+    body: JSON.stringify({ prerequisite_code: prerequisiteCode }),
+  });
+}
+
+export function startFollowUp(sessionId: string): Promise<DiagnosisReport> {
+  return apiRequest<DiagnosisReport>(`/api/sessions/${sessionId}/diagnosis/follow-up`, { method: "POST" });
+}
+
+export type PlanConcept = {
+  id: string;
+  topic_id: string;
+  name: string;
+  position: number;
+  summary: string;
+};
+
+export type PlanStep = {
+  id: string;
+  position: number;
+  objective_id: string;
+  objective_code: string;
+  objective_statement: string;
+  concept_id: string;
+  concept: string;
+  status: "satisfied" | "current" | "upcoming";
+  evidence: "observed" | "none";
+  completion_criteria: string;
+};
+
+export type LearningPlan = {
+  id: string;
+  session_id: string;
+  topic_id: string;
+  revision: number;
+  status: "active" | "superseded";
+  session_status: string;
+  diagnostic_attempt_id: string;
+  starting_objective_code: string | null;
+  summary: string;
+  current_step_id: string | null;
+  concepts: PlanConcept[];
+  steps: PlanStep[];
+  created_at: string;
+  updated_at: string;
+};
+
+export function createLearningPlan(sessionId: string): Promise<LearningPlan> {
+  return apiRequest<LearningPlan>(`/api/sessions/${sessionId}/plan`, { method: "POST" });
+}
+
+export function getLearningPlan(sessionId: string): Promise<LearningPlan> {
+  return apiRequest<LearningPlan>(`/api/sessions/${sessionId}/plan`);
+}
+
+export function reviseLearningPlan(sessionId: string): Promise<LearningPlan> {
+  return apiRequest<LearningPlan>(`/api/sessions/${sessionId}/plan/revision`, { method: "POST" });
+}

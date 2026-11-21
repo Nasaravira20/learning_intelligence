@@ -20,6 +20,7 @@ import {
 } from "@/lib/api";
 import { slugify } from "@/lib/slug";
 import { DiagnosticPanel } from "@/components/DiagnosticPanel";
+import { PlanPanel } from "@/components/PlanPanel";
 import { LearnerDashboard } from "@/components/LearnerDashboard";
 
 function ErrorBanner({ error }: { error: UiError }) {
@@ -35,6 +36,9 @@ function ErrorBanner({ error }: { error: UiError }) {
 function sessionStatusLabel(status: string): string {
   if (status === "DIAGNOSING") {
     return "Diagnosing";
+  }
+  if (status === "PLAN_READY") {
+    return "Plan ready";
   }
   if (status === "TOPIC_SELECTED") {
     return "Topic selected";
@@ -67,6 +71,12 @@ export function TeacherShell() {
   const [topicId, setTopicId] = useState("");
   const [pending, setPending] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  function replaceSession(updated: LearningSession) {
+    setSessions((current) => current.map((item) => (item.id === updated.id ? { ...item, ...updated } : item)));
+    setRefreshKey((value) => value + 1);
+  }
 
   async function refreshHealth() {
     try {
@@ -350,11 +360,12 @@ export function TeacherShell() {
                   Resume
                 </button>
               </div>
-              <DiagnosticPanel
+              <DiagnosticPanel session={session} refreshKey={refreshKey} onSession={replaceSession} />
+              <PlanPanel
                 session={session}
-                onSession={(updated) =>
-                  setSessions((current) => current.map((item) => (item.id === updated.id ? updated : item)))
-                }
+                refreshKey={refreshKey}
+                onSession={replaceSession}
+                onRefresh={() => setRefreshKey((value) => value + 1)}
               />
             </li>
           ))}

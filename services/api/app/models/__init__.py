@@ -14,6 +14,7 @@ from app.models.entities import (
     LearningTopic,
     User,
 )
+from app.models.planning import LearningPlan, LearningPlanStep, TopicConcept
 from app.models.learner_records import (
     AssessmentRecord,
     LearnerKnowledge,
@@ -33,7 +34,10 @@ __all__ = [
     "DiagnosticResponse",
     "LearnerKnowledge",
     "LearningObjective",
+    "LearningPlan",
+    "LearningPlanStep",
     "ObjectivePrerequisite",
+    "TopicConcept",
     "LearnerProfile",
     "LearningActivity",
     "LearningGoal",

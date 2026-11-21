@@ -6,6 +6,7 @@ from app.db.base import Base
 from app.models import entities  # noqa: F401
 from app.models import diagnostics  # noqa: F401
 from app.models import learner_records  # noqa: F401
+from app.models import planning  # noqa: F401
 
 config = context.config
 settings = get_settings()

@@ -20,7 +20,7 @@ Phase 0 acceptance: frontend and backend start, they communicate, migrations wor
 
 Phase 0 is complete. Acceptance tests passed on 2026-11-21. The product owner approved moving to Phase 1 after that result. Phase 1 is approved.
 
-Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 4 until the product owner approves the Phase 3 report.
+Phase 2 is approved. The product owner approved starting Phase 3 on 2026-11-21. Phase 3 is approved. The product owner approved starting Phase 4 on 2026-11-21. Phase 4 is implemented. Acceptance tests passed on 2026-11-21. Do not start Phase 5 until the product owner approves the Phase 4 report.
 
 Later acceptance criteria stay in `AI_TEACHER_MVP_ROADMAP.md` sections 12 and 18. Do not mark a criterion done unless it was executed.
 
@@ -442,7 +442,118 @@ Name: Diagnostic Engine
 - Do not set AI_PROVIDER=gemini for this demo. That path is not part of the verified Phase 3 run.
 
 11. Remaining Issues
-- None that block the Phase 3 gate. Do not start Phase 4 until this report is approved.
+- None that block the Phase 3 gate. The product owner approved this report by starting Phase 4.
+
+PRODUCT OWNER DECISION:
+[x] Approve
+[ ] Request changes
+```
+
+# Phase 4 completion report
+
+```text
+PHASE COMPLETION REPORT
+
+Phase: 4
+Name: Learning Planner
+
+1. Implementation Summary
+- After a completed diagnosis, deterministic code builds a prerequisite-ordered learning plan. The model does not choose the sequence, strategy IDs, citations, or effect sizes.
+- A step is satisfied only by observed diagnostic evidence: understanding solid, answer correct, reasoning sound, and confidence above 0.400. Partial, weak, uncertain, inferred, or low-confidence evidence leaves the concept in the plan.
+- The current step is the first unsatisfied objective in prerequisite order. A missing prerequisite moves the starting point to that objective. A dependency cycle is rejected before it is stored.
+- Creating the plan moves the session from DIAGNOSING to PLAN_READY. A follow-up diagnosis can supersede the active plan with the next revision. The same evidence returns plan_unchanged and does not write a new revision.
+- Teaching does not start. Routine tests and the local UI use the mock provider. No live Gemini request was made.
+
+2. Deliverables
+- Topic decomposition stored as topic concepts
+- Prerequisite graph and cycle detection
+- Learning plan service
+- Learning activity note for the plan revision
+- Plan progress on learning plan steps
+- Progress UI on /learn
+
+3. Files Created
+- services/api/app/planner/__init__.py
+- services/api/app/planner/graph.py
+- services/api/app/planner/policy.py
+- services/api/app/planner/service.py
+- services/api/app/models/planning.py
+- services/api/app/schemas/planning.py
+- services/api/app/api/planning.py
+- services/api/alembic/versions/0006_learning_plans.py
+- services/api/tests/test_planner.py
+- services/api/tests/ai/test_planner_benchmark.py
+- apps/web/src/components/PlanPanel.tsx
+
+4. Files Modified
+- services/api/app/models/entities.py
+- services/api/app/models/diagnostics.py
+- services/api/app/models/__init__.py
+- services/api/app/diagnostics/service.py
+- services/api/app/schemas/diagnostics.py
+- services/api/app/api/diagnostics.py
+- services/api/app/services/sessions.py
+- services/api/app/main.py
+- services/api/alembic/env.py
+- services/api/tests/conftest.py
+- services/api/tests/test_api.py
+- apps/web/src/lib/api.ts
+- apps/web/src/components/DiagnosticPanel.tsx
+- apps/web/src/components/TeacherShell.tsx
+- README.md
+- AI_TEACHER_MVP_ROADMAP.md
+- .cursor/skills/implement-roadmap-phase/phases.md
+
+5. Tests Executed
+- Exact commands:
+- docker compose build api
+- docker compose run --rm api python -m pytest
+- npm test
+  (working directory: apps/web)
+- npx tsc --noEmit
+  (working directory: apps/web)
+- docker compose up -d --build api web
+- curl.exe -s http://localhost:8000/health
+- curl.exe -s http://localhost:3000/health
+- Browser at http://localhost:3000/learn as the existing signed-in learner: created topic Plan check, started a session, saved derivatives.basic, backprop.step (prerequisite derivatives.basic), and chain-rule.apply (prerequisite derivatives.basic), then added chain-rule.apply as a prerequisite of backprop.step. Started diagnosis, answered all three questions with separate reasoning, submitted, built the plan, reloaded, and chose Revise plan.
+
+6. Test Results
+- API: 65 passed, 0 failed, 0 skipped, in 47.08s. An earlier run of the same suite failed 1 and passed 64 before an unfinished first diagnosis was distinguished from an open follow-up. The passing run is the one after that fix and after docker compose build api.
+- Web: 16 passed, 0 failed, 0 skipped, 5 files. npx tsc --noEmit exited 0.
+- Both health endpoints returned {"status":"ok","database":"ok"}
+- API logs: Running upgrade 0005_diagnostics -> 0006_learning_plans
+- Browser: the plan was Revision 1, status Plan ready, order 1 Start here derivatives.basic, 2 Later chain-rule.apply, 3 Later backprop.step. Each step showed its objective statement and completion criteria. None were marked already demonstrated. After reload the same revision, order, and status were still on the page, and the activity list included "Learning plan revision 1 starts at derivatives.basic." Revise plan with no new evidence showed "The plan already matches the latest diagnostic evidence." with code plan_unchanged, and the revision stayed 1.
+
+7. Acceptance Criteria
+- Passed: Every learning step has an objective. Prerequisites are respected. Missing prerequisite knowledge changes the starting point. Concepts are not skipped without supporting evidence. Invalid dependency cycles are detected. Plan progress is persisted. Plans can be revised after new diagnostic evidence.
+- Failed: none
+- Not implemented: none
+
+8. Known Limitations
+- No pedagogy selection, teaching, evaluation mastery, adaptation, or retention. The session stops at PLAN_READY.
+- The development mock used by the UI scores non-blank answers as partial with weak reasoning, so the local page does not mark a step observed. The revision test uses scripted solid, correct, sound, high-confidence judgments. AI_PROVIDER=gemini was not called.
+- Topics, concepts, and objectives are shared among signed-in users. Plans, diagnostic attempts, and learner records stay private to the signed-in learner.
+- The human-reviewed planner sample is 6 scripted backpropagation graphs. It is not a claim of universal planning accuracy.
+- This phase made no live Gemini calls. Cost is USD 0.
+- apps/web/tsconfig.tsbuildinfo changed when the typecheck ran. It is a local compiler cache and is not part of this phase.
+
+9. API Usage
+- Model: none
+- Requests: 0
+- Tokens: 0
+- Estimated cost: USD 0
+
+10. Demo Instructions
+- From the repository root, with AI_PROVIDER=mock: docker compose up --build
+- Open http://localhost:3000, sign in, and open /learn
+- Create a topic, start a session, and save learning objectives with prerequisite codes that already exist on that topic
+- Start diagnosis, answer each question, and add reasoning separately
+- Submit, then choose Build learning plan. The first step without observed evidence is marked Start here. Reload the page. The same revision is still there.
+- Choose Revise plan before any new diagnosis. The page reports plan_unchanged.
+- Do not set AI_PROVIDER=gemini for this demo. That path is not part of the verified Phase 4 run.
+
+11. Remaining Issues
+- None that block the Phase 4 gate. Do not start Phase 5 until this report is approved.
 
 PRODUCT OWNER DECISION:
 [ ] Approve
