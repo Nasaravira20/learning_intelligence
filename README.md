@@ -112,4 +112,4 @@ The report is `docs/GEMINI_MODEL_STRATEGY.md`. Internal cost figures in that rep
 
 ## Learner dashboard
 
-Open http://localhost:3000/learn after signing in. The page saves a display name, a background note, preferences, a goal, a self-reported knowledge record, and an assessment note. Self-reported knowledge is labeled “Inferred, not confirmed.” Reloading the page reads the same rows back from PostgreSQL.
+Open http://localhost:3000/learn after signing in. The page saves a display name, a background note, preferences, a goal, a self-reported knowledge record, an assessment note, a misconception, and a learning activity. Self-reported knowledge and misconceptions are labeled “Inferred, not confirmed.” Reloading the page reads the same rows back from PostgreSQL. A session history view lists the knowledge, assessments, misconceptions, and activities saved for that topic.

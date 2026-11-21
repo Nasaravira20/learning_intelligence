@@ -392,6 +392,41 @@ export function recordAssessment(
   });
 }
 
+export function recordMisconception(
+  topicId: string,
+  concept: string,
+  description: string,
+  supportingNote: string,
+): Promise<MisconceptionRecord> {
+  return apiRequest<MisconceptionRecord>("/api/learner/misconceptions", {
+    method: "POST",
+    body: JSON.stringify({
+      topic_id: topicId,
+      concept,
+      description,
+      evidence_kind: "inferred",
+      provenance: "learner_report",
+      confidence: 0.4,
+      supporting_note: supportingNote.trim() ? supportingNote.trim() : null,
+    }),
+  });
+}
+
+export function recordActivity(
+  topicId: string,
+  activityKind: LearningActivityRecord["activity_kind"],
+  summary: string,
+): Promise<LearningActivityRecord> {
+  return apiRequest<LearningActivityRecord>("/api/learner/activities", {
+    method: "POST",
+    body: JSON.stringify({
+      topic_id: topicId || null,
+      activity_kind: activityKind,
+      summary,
+    }),
+  });
+}
+
 export function getSessionHistory(sessionId: string): Promise<SessionHistory> {
   return apiRequest<SessionHistory>(`/api/sessions/${sessionId}/history`);
 }

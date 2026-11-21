@@ -6,7 +6,9 @@ import { evidenceLabel } from "@/lib/evidence";
 import {
   KnowledgeRecord,
   LearnerDashboardData,
+  LearningActivityRecord,
   LearningSession,
+  MisconceptionRecord,
   SessionHistory,
   Topic,
   UiError,
@@ -14,8 +16,10 @@ import {
   createLearningGoal,
   getLearnerDashboard,
   getSessionHistory,
+  recordActivity,
   recordAssessment,
   recordKnowledge,
+  recordMisconception,
   saveLearnerPreferences,
   toUiError,
   updateLearnerProfile,
@@ -59,6 +63,13 @@ export function LearnerDashboard({
   const [promptSummary, setPromptSummary] = useState("");
   const [responseSummary, setResponseSummary] = useState("");
   const [assessmentTopicId, setAssessmentTopicId] = useState("");
+  const [misconceptionTopicId, setMisconceptionTopicId] = useState("");
+  const [misconceptionConcept, setMisconceptionConcept] = useState("");
+  const [misconceptionDescription, setMisconceptionDescription] = useState("");
+  const [misconceptionNote, setMisconceptionNote] = useState("");
+  const [activityTopicId, setActivityTopicId] = useState("");
+  const [activityKind, setActivityKind] = useState<LearningActivityRecord["activity_kind"]>("note");
+  const [activitySummary, setActivitySummary] = useState("");
   const [history, setHistory] = useState<SessionHistory | null>(null);
 
   async function refresh() {
@@ -75,6 +86,8 @@ export function LearnerDashboard({
     setKnowledgeTopicId((current) => current || topics[0]?.id || "");
     setGoalTopicId((current) => current || topics[0]?.id || "");
     setAssessmentTopicId((current) => current || topics[0]?.id || "");
+    setMisconceptionTopicId((current) => current || topics[0]?.id || "");
+    setActivityTopicId((current) => current || topics[0]?.id || "");
     setCorrectionId((current) =>
       next.knowledge.some((item) => item.id === current) ? current : next.knowledge[0]?.id || "",
     );
@@ -111,6 +124,8 @@ export function LearnerDashboard({
     setKnowledgeTopicId((current) => current || topics[0]?.id || "");
     setGoalTopicId((current) => current || topics[0]?.id || "");
     setAssessmentTopicId((current) => current || topics[0]?.id || "");
+    setMisconceptionTopicId((current) => current || topics[0]?.id || "");
+    setActivityTopicId((current) => current || topics[0]?.id || "");
   }, [topics]);
 
   async function run(name: string, action: () => Promise<void>) {
@@ -202,6 +217,41 @@ export function LearnerDashboard({
       await recordAssessment(assessmentTopicId, promptSummary.trim(), responseSummary.trim());
       setPromptSummary("");
       setResponseSummary("");
+    });
+  }
+
+  async function onMisconception(event: FormEvent) {
+    event.preventDefault();
+    if (!misconceptionTopicId || !misconceptionConcept.trim() || !misconceptionDescription.trim()) {
+      setError({
+        code: "validation_error",
+        message: "A misconception needs a topic, concept, and description.",
+        requestId: null,
+      });
+      return;
+    }
+    await run("misconception", async () => {
+      await recordMisconception(
+        misconceptionTopicId,
+        misconceptionConcept.trim(),
+        misconceptionDescription.trim(),
+        misconceptionNote,
+      );
+      setMisconceptionConcept("");
+      setMisconceptionDescription("");
+      setMisconceptionNote("");
+    });
+  }
+
+  async function onActivity(event: FormEvent) {
+    event.preventDefault();
+    if (!activitySummary.trim()) {
+      setError({ code: "validation_error", message: "A learning activity needs a summary.", requestId: null });
+      return;
+    }
+    await run("activity", async () => {
+      await recordActivity(activityTopicId, activityKind, activitySummary.trim());
+      setActivitySummary("");
     });
   }
 
@@ -494,6 +544,135 @@ export function LearnerDashboard({
         </ul>
       </form>
 
+      <form onSubmit={onMisconception} className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+        <h3 className="font-semibold">Misconceptions</h3>
+        <p className="mt-1 text-sm text-stone-600">
+          A self-report is stored as inferred. It is a hypothesis, not a confirmed misunderstanding.
+        </p>
+        <label className="mt-3 block text-sm text-stone-700" htmlFor="misconception-topic">
+          Topic
+          <select
+            id="misconception-topic"
+            value={misconceptionTopicId}
+            onChange={(event) => setMisconceptionTopicId(event.target.value)}
+            className="mt-1 w-full rounded border border-stone-300 px-3 py-2"
+          >
+            <option value="">Choose a topic</option>
+            {topics.map((topic) => (
+              <option key={topic.id} value={topic.id}>
+                {topic.title}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="mt-3 block text-sm text-stone-700" htmlFor="misconception-concept">
+          Concept
+        </label>
+        <input
+          id="misconception-concept"
+          value={misconceptionConcept}
+          onChange={(event) => setMisconceptionConcept(event.target.value)}
+          maxLength={120}
+          className="mt-1 w-full rounded border border-stone-300 px-3 py-2"
+        />
+        <label className="mt-3 block text-sm text-stone-700" htmlFor="misconception-description">
+          Description
+        </label>
+        <textarea
+          id="misconception-description"
+          value={misconceptionDescription}
+          onChange={(event) => setMisconceptionDescription(event.target.value)}
+          maxLength={1000}
+          className="mt-1 w-full rounded border border-stone-300 px-3 py-2"
+        />
+        <label className="mt-3 block text-sm text-stone-700" htmlFor="misconception-note">
+          Supporting note
+        </label>
+        <input
+          id="misconception-note"
+          value={misconceptionNote}
+          onChange={(event) => setMisconceptionNote(event.target.value)}
+          maxLength={1000}
+          className="mt-1 w-full rounded border border-stone-300 px-3 py-2"
+        />
+        <button type="submit" disabled={pending !== null} className="mt-3 rounded bg-stone-900 px-3 py-2 text-sm text-white disabled:opacity-50">
+          Record misconception
+        </button>
+        <ul className="mt-4 space-y-3">
+          {(data?.misconceptions ?? []).length === 0 ? (
+            <li className="text-sm text-stone-600">No misconceptions recorded yet.</li>
+          ) : null}
+          {(data?.misconceptions ?? []).map((item) => (
+            <MisconceptionItem
+              key={item.id}
+              item={item}
+              topicTitle={topics.find((topic) => topic.id === item.topic_id)?.title}
+            />
+          ))}
+        </ul>
+      </form>
+
+      <form onSubmit={onActivity} className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+        <h3 className="font-semibold">Learning activities</h3>
+        <label className="mt-3 block text-sm text-stone-700" htmlFor="activity-topic">
+          Topic
+          <select
+            id="activity-topic"
+            value={activityTopicId}
+            onChange={(event) => setActivityTopicId(event.target.value)}
+            className="mt-1 w-full rounded border border-stone-300 px-3 py-2"
+          >
+            <option value="">No specific topic</option>
+            {topics.map((topic) => (
+              <option key={topic.id} value={topic.id}>
+                {topic.title}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="mt-3 block text-sm text-stone-700" htmlFor="activity-kind">
+          Kind
+          <select
+            id="activity-kind"
+            value={activityKind}
+            onChange={(event) => setActivityKind(event.target.value as LearningActivityRecord["activity_kind"])}
+            className="mt-1 w-full rounded border border-stone-300 px-3 py-2"
+          >
+            <option value="note">Note</option>
+            <option value="explanation">Explanation</option>
+            <option value="practice">Practice</option>
+            <option value="review">Review</option>
+          </select>
+        </label>
+        <label className="mt-3 block text-sm text-stone-700" htmlFor="activity-summary">
+          Summary
+        </label>
+        <textarea
+          id="activity-summary"
+          value={activitySummary}
+          onChange={(event) => setActivitySummary(event.target.value)}
+          maxLength={500}
+          className="mt-1 w-full rounded border border-stone-300 px-3 py-2"
+        />
+        <button type="submit" disabled={pending !== null} className="mt-3 rounded bg-stone-900 px-3 py-2 text-sm text-white disabled:opacity-50">
+          Record activity
+        </button>
+        <ul className="mt-3 space-y-2 text-sm">
+          {(data?.activities ?? []).length === 0 ? <li className="text-stone-600">No activities yet.</li> : null}
+          {(data?.activities ?? []).map((item) => (
+            <li key={item.id}>
+              <span className="text-stone-500">{item.activity_kind}</span> — {item.summary}
+              {item.topic_id ? (
+                <span className="text-stone-500">
+                  {" "}
+                  · {topics.find((topic) => topic.id === item.topic_id)?.title ?? "Topic"}
+                </span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      </form>
+
       <div className="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
         <h3 className="font-semibold">Session history</h3>
         {sessions.length === 0 ? <p className="mt-3 text-sm text-stone-600">Start a session to retrieve its history.</p> : null}
@@ -524,10 +703,47 @@ export function LearnerDashboard({
               ))}
             </ul>
             <p className="mt-2 text-stone-600">{history.assessments.length} assessment notes.</p>
+            <p className="mt-2 text-stone-600">{history.misconceptions.length} misconception records.</p>
+            <ul className="mt-2 space-y-2">
+              {history.misconceptions.map((item) => (
+                <li key={item.id}>
+                  {item.concept}: {item.description}{" "}
+                  <span className="text-stone-500">
+                    {evidenceLabel(item.evidence_kind)} · {item.status}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-stone-600">{history.activities.length} learning activities.</p>
+            <ul className="mt-2 space-y-2">
+              {history.activities.map((item) => (
+                <li key={item.id}>
+                  <span className="text-stone-500">{item.activity_kind}</span> — {item.summary}
+                </li>
+              ))}
+            </ul>
           </div>
         ) : null}
       </div>
     </section>
+  );
+}
+
+function MisconceptionItem({ item, topicTitle }: { item: MisconceptionRecord; topicTitle?: string }) {
+  return (
+    <li className="rounded border border-stone-200 px-3 py-2 text-sm">
+      <p className="font-medium">
+        {item.concept}
+        {topicTitle ? <span className="font-normal text-stone-500"> · {topicTitle}</span> : null}
+      </p>
+      <p>{item.description}</p>
+      {item.supporting_note ? <p className="text-stone-600">{item.supporting_note}</p> : null}
+      <p className="text-stone-600">
+        <span>{evidenceLabel(item.evidence_kind)}</span>
+        <span> · {item.status}</span>
+        <span> · confidence {item.confidence.toFixed(2)}</span>
+      </p>
+    </li>
   );
 }
 
